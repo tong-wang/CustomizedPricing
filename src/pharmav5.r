@@ -38,7 +38,7 @@ dataV <- data[-RandomIndex.Test, ]
 ## visualize Test data
 summary(dataT)
 hist(dataT[dataT$isDiscount,]$Discount, breaks=100)
-qplot(x=nContractQuantity, y=Discount, colour=Channel, data=dataT)
+#qplot(x=nContractQuantity, y=Discount, colour=Channel, data=dataT)
 
 ### end data preparation
 
@@ -189,7 +189,7 @@ svm.accuracy <- performance(svm.pred, measure = "acc")
 plot(svm.accuracy)
 
 
-plot(svm.model, data = dataV, formula = nContractQuantity ~ nInvoicePrice)
+#plot(svm.model, data = dataV, formula = nContractQuantity ~ nInvoicePrice)
 
 
 
