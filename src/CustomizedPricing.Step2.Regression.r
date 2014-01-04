@@ -38,15 +38,33 @@ plot(linear2.valid2$Discount, linear2.valid2$pred)
 
 
 
+
+
+
 #rpart regression for Discount with Territory
-treeDiscount.model <- rpart(Discount ~ nContractQuantity + nInvoicePrice + Channel + Territory, data=dataT[dataT$isDiscount,]
-                            ,method='anova')
+treeDiscount.model <- rpart(Discount ~ nContractQuantity + nInvoicePrice + Channel + Territory, data=dataT[dataT$isDiscount,], method='anova')
 summary(treeDiscount.model)
 
 treeDiscount.valid2 <- svm.valid[svm.valid$pred1==1,]
 treeDiscount.valid2$pred <- predict(treeDiscount.model, newdata=treeDiscount.valid2)
-
 summary(treeDiscount.valid2)
+
+
+## Finding the leaf number the elements belong to. This is for discount optimisation in next step
+tree1 = treeDiscount.model
+tree1$frame$yval = as.numeric(rownames(tree1$frame))
+treeDiscount.valid2$node= as.factor(predict(tree1, newdata=treeDiscount.valid2))
+plot(treeDiscount.valid2$node)
+
+##The labelling is done on training data as well to enable further steps of optimisation
+data_discount=dataT[dataT$isDiscount,]
+data_discount$node1= as.factor(predict(tree1, newdata=data_discount))
+
+##preview demand curve of a segment
+summary(data_discount)
+hist(data_discount[data_discount$node1==488,]$Discount)
+
+
 
 ## Calculating RMSE as the accuracy measure
 RMSE_rpart=rmse(treeDiscount.valid2$pred,treeDiscount.valid2$Discount)
@@ -54,32 +72,49 @@ plot(treeDiscount.valid2$pred,treeDiscount.valid2$Discount)
 
 
 ## Plotting of the Rpart
-
 prp(treeDiscount.model)
-treeDiscount_party = as.party(treeDiscount.model)
-plot(treeDiscount_party,main="Plot of Decision Tree",type="simple")
+##treeDiscount_party = as.party(treeDiscount.model)
+##plot(treeDiscount_party,main="Plot of Decision Tree",type="simple")
+
+
 
 
 
 
 #rpart regression for Discount without Territory
-treeDiscount_T.model <- rpart(Discount ~ nContractQuantity + nInvoicePrice + Channel, data=dataT[dataT$isDiscount,]
-                              ,method='anova', cp=0.001)
+treeDiscount_T.model <- rpart(Discount ~ nContractQuantity + nInvoicePrice + Channel, data=dataT[dataT$isDiscount,], method='anova', cp=0.001)
 summary(treeDiscount_T.model)
 
 treeDiscount_T.valid2 <- forest1.valid[forest1.valid$pred1==1,]
 treeDiscount_T.valid2$pred <- predict(treeDiscount_T.model, newdata=treeDiscount_T.valid2)
 summary(treeDiscount_T.valid2)
 
+
+## Finding the leaf number the elements belong to. This is for discount optimisation in next step
+tree2 = treeDiscount_T.model
+tree2$frame$yval = as.numeric(rownames(tree2$frame))
+treeDiscount_T.valid2$node= as.factor(predict(tree2, newdata=treeDiscount_T.valid2))
+
+plot(treeDiscount_T.valid2$node)
+
+data_discount$node2= as.factor(predict(tree2, newdata=data_discount))
+
+
+
 RMSE_rpartT=rmse(treeDiscount_T.valid2$pred,treeDiscount_T.valid2$Discount)
 plot(treeDiscount_T.valid2$pred,treeDiscount_T.valid2$Discount)
 ## With out territory, the results seem to be better
 
 ## Plotting of the Rpart
-treeDiscount_party_T = as.party(treeDiscount_T.model)
-plot(treeDiscount_party_T,main="Plot of Decision Tree",type="simple")
-
 prp(treeDiscount_T.model)
+#treeDiscount_party_T = as.party(treeDiscount_T.model)
+#plot(treeDiscount_party_T,main="Plot of Decision Tree",type="simple")
+
+
+
+
+
+
 
 
 
@@ -126,3 +161,4 @@ plot(rFDiscount.valid2$pred,rFDiscount.valid2$Discount)
 Results=data.frame(Model_Type=c("Linear Regression","rpart With Territory","rpart Without Territory","randomForest"), RMSE = c(RMSE_linear,RMSE_rpart,RMSE_rpartT,RMSE_rF))
 Results
 ## Rpart without Territory code seems to be best following Ozam razor's rule
+
