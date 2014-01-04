@@ -6,9 +6,8 @@ require("ggplot2")
 #setwd("~/PATH/TO/DATA/FILE")
 
 ### read the data files
-dataT <- read.csv("../data/data.v5.masked.Training.csv", header=TRUE)
-dataV <- read.csv("../data/data.v5.masked.Validation.csv", header=TRUE)
-levels(dataV$Territory) = levels(dataT$Territory)
+load("../data/data.v5.masked.Training.RData")
+load("../data/data.v5.masked.Validation.RData")
 
 
 
@@ -169,6 +168,9 @@ plot(svm.accuracy)
 #plot(svm.model, data = dataV, formula = nContractQuantity ~ nInvoicePrice)
 
 
+
+## save data for next step use
+save(forest1.valid, svm.valid, file="../data/Step1.output.RData")
 
 
 

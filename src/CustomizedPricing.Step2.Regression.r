@@ -6,9 +6,10 @@ require("ggplot2")
 #setwd("~/PATH/TO/DATA/FILE")
 
 ### read the data files
-dataT <- read.csv("../data/data.v5.masked.Training.csv", header=TRUE)
-dataV <- read.csv("../data/data.v5.masked.Validation.csv", header=TRUE)
-levels(dataV$Territory) = levels(dataT$Territory)
+load("../data/data.v5.masked.Training.RData")
+load("../data/data.v5.masked.Validation.RData")
+
+load("../data/Step1.output.RData")
 
 
 
@@ -16,7 +17,6 @@ levels(dataV$Territory) = levels(dataT$Territory)
 ###########################
 ### STEP2. We are extending the work from the source.
 ## We are considering rpart as the base algorithm from base. 
-require("hydroGOF")
 require("hydroGOF")
 require("partykit")
 require("rpart.plot")
@@ -104,18 +104,18 @@ plot(rFDiscount.valid2$pred,rFDiscount.valid2$Discount)
 
 
 #SVM regression [not working yet]
-svm.tune2 <- tune.svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT[dataT$isDiscount,], type="eps-regression", gamma = 2^(-1:5), cost = 10^(1:4))
-svm.model2 <- svm.tune2$best.model
+#svm.tune2 <- tune.svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT[dataT$isDiscount,], type="eps-regression", gamma = 2^(-1:5), cost = 10^(1:4))
+#svm.model2 <- svm.tune2$best.model
 #svm.model2 <- svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT[dataT$isDiscount,], type="eps-regression", cost = 10000, gamma = 8)
-summary(svm.model2)
+#summary(svm.model2)
 
-svm.valid2 <- svm.valid[svm.valid$pred1==1,][c("RecordID", "Channel", "Territory", "nContractQuantity", "nInvoicePrice", "Discount", "isDiscount")]
-svm.valid2$pred <- predict(svm.model2, newdata=svm.valid2)
-summary(svm.valid2)
+#svm.valid2 <- svm.valid[svm.valid$pred1==1,][c("RecordID", "Channel", "Territory", "nContractQuantity", "nInvoicePrice", "Discount", "isDiscount")]
+#svm.valid2$pred <- predict(svm.model2, newdata=svm.valid2)
+#summary(svm.valid2)
 
 
-plot(svm.valid2$Discount, svm.valid2$pred, xlim=c(0,1), ylim=c(0,1))
-qplot(x=Discount, y=pred, colour=Channel, data=svm.valid2, xlim=c(0,1), ylim=c(0,1))
+#plot(svm.valid2$Discount, svm.valid2$pred, xlim=c(0,1), ylim=c(0,1))
+#qplot(x=Discount, y=pred, colour=Channel, data=svm.valid2, xlim=c(0,1), ylim=c(0,1))
 
 
 

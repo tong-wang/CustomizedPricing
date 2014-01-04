@@ -27,9 +27,8 @@ First set the working directory [NOTE: you need to modify the path below to the 
 #NEED TO FIRST SET R WORKING DIRECTORY TO WHERE THE FILES ARE LOCATED!!!
 #setwd("~/PATH/TO/DATA/FILE")
 
-dataT <- read.csv("../data/data.v5.masked.Training.csv", header=TRUE)
-dataV <- read.csv("../data/data.v5.masked.Validation.csv", header=TRUE)
-levels(dataV$Territory) = levels(dataT$Territory)
+load("../data/data.v5.masked.Training.RData")
+load("../data/data.v5.masked.Validation.RData")
 
 head(dataT, n=10)
 ```
@@ -233,7 +232,7 @@ plot(svm.accuracy)
 
 - Visualize the SVM model
 ```{r svm.visualization}
-#plot(svm.model, data = dataV, formula = nContractQuantity ~ nInvoicePrice)
+plot(svm.model, data = dataV, formula = nContractQuantity ~ nInvoicePrice)
 ```
 
 

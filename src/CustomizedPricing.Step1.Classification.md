@@ -28,36 +28,35 @@ First set the working directory [NOTE: you need to modify the path below to the 
 #NEED TO FIRST SET R WORKING DIRECTORY TO WHERE THE FILES ARE LOCATED!!!
 #setwd("~/PATH/TO/DATA/FILE")
 
-dataT <- read.csv("../data/data.v5.masked.Training.csv", header=TRUE)
-dataV <- read.csv("../data/data.v5.masked.Validation.csv", header=TRUE)
-levels(dataV$Territory) = levels(dataT$Territory)
+load("../data/data.v5.masked.Training.RData")
+load("../data/data.v5.masked.Validation.RData")
 
 head(dataT, n=10)
 ```
 
 ```
-   PricingDate     Product      Customer    Channel     Territory ContractQuantity InvoicePrice InvoiceAmount NetPrice NetAmount Discount isDiscount
-1    12-OCT-12  Product_94  Customer_999  Channel_4  Territory_11               30         70.0        2100.0     70.0      2100   0.0000      FALSE
-2    18-SEP-12  Product_27 Customer_1623  Channel_8 Territory_111               30         51.7        1551.0     51.7      1551   0.0000      FALSE
-3    07-SEP-12  Product_52 Customer_1832  Channel_7  Territory_15                2         40.0          80.0     40.0        80   0.0000      FALSE
-4    14-AUG-12  Product_98  Customer_596  Channel_8  Territory_45               20         39.0         780.0     39.0       780   0.0000      FALSE
-5    03-SEP-12 Product_122  Customer_837  Channel_4  Territory_27               18         90.0        1620.0     50.0       900   0.4444       TRUE
-6    04-JUL-12 Product_135  Customer_464  Channel_7  Territory_33               20         13.0         260.0     13.0       260   0.0000      FALSE
-7    24-SEP-12  Product_32 Customer_1356 Channel_11  Territory_25                7        108.5         759.5     62.0       434   0.4286       TRUE
-8    21-NOV-12 Product_102  Customer_230  Channel_8  Territory_94               20          7.1         142.0      7.1       142   0.0000      FALSE
-9    27-AUG-12 Product_122   Customer_33 Channel_11  Territory_25               60         90.0        5400.0     60.0      3600   0.3333       TRUE
-10   14-NOV-12 Product_123 Customer_1752  Channel_7  Territory_29                1         40.0          40.0     40.0        40   0.0000      FALSE
-   nContractQuantity nInvoicePrice
-1             0.6439      0.271735
-2             0.6439     -0.000312
-3            -1.1864     -0.230651
-4             0.3699     -0.253379
-5             0.2987      0.497348
-6             0.3699     -1.239639
-7            -0.3397      0.665170
-8             0.3699     -1.782636
-9             1.1124      0.497348
-10           -1.6549     -0.230651
+      PricingDate     Product      Customer    Channel     Territory ContractQuantity InvoicePrice InvoiceAmount NetPrice NetAmount Discount isDiscount
+23398   11-OCT-12 Product_123  Customer_755  Channel_7  Territory_32                1        35.29         35.29    35.29     35.29   0.0000      FALSE
+1377    27-DEC-12  Product_88 Customer_1726  Channel_8 Territory_111               20        21.70        434.00    21.70    434.00   0.0000      FALSE
+7862    30-OCT-12 Product_104  Customer_739  Channel_4  Territory_11               30        15.00        450.00    15.00    450.00   0.0000      FALSE
+7074    22-NOV-12  Product_73  Customer_367  Channel_7   Territory_1               12        18.13        217.56    18.13    217.56   0.0000      FALSE
+21667   24-SEP-12  Product_52 Customer_1444 Channel_10  Territory_30               20        40.00        800.00    40.00    800.00   0.0000      FALSE
+309     22-OCT-12  Product_91  Customer_767  Channel_8   Territory_6               20        20.00        400.00    20.00    400.00   0.0000      FALSE
+13483   02-NOV-12 Product_130 Customer_1707  Channel_7  Territory_97               20       107.00       2140.00   107.00   2140.00   0.0000      FALSE
+22501   04-SEP-12  Product_52 Customer_1262  Channel_4  Territory_23               10        40.00        400.00    40.00    400.00   0.0000      FALSE
+22247   20-JUL-12  Product_25  Customer_642  Channel_7  Territory_15              150        16.55       2482.50    16.55   2482.50   0.0000      FALSE
+8449    03-JUL-12   Product_8  Customer_771  Channel_7  Territory_29               14        13.90        194.60    11.91    166.74   0.1432       TRUE
+      nContractQuantity nInvoicePrice
+23398          -1.65494       -0.3431
+1377            0.36988       -0.7797
+7862            0.64393       -1.1112
+7074            0.02461       -0.9410
+21667           0.36988       -0.2307
+309             0.36988       -0.8529
+13483           0.36988        0.6527
+22501          -0.09862       -0.2307
+22247           1.73175       -1.0229
+8449            0.12880       -1.1795
 ```
 
 
@@ -105,33 +104,33 @@ glm(formula = isDiscount ~ nContractQuantity + nInvoicePrice +
 
 Deviance Residuals: 
    Min      1Q  Median      3Q     Max  
--3.181  -0.491  -0.210   0.519   4.409  
+-3.214  -0.486  -0.200   0.501   3.623  
 
 Coefficients:
-                  Estimate Std. Error z value Pr(>|z|)    
-(Intercept)        -1.0456     0.6610   -1.58    0.114    
-nContractQuantity   1.9262     0.0319   60.30  < 2e-16 ***
-nInvoicePrice       0.7149     0.0258   27.76  < 2e-16 ***
-ChannelChannel_10  -0.1093     0.6718   -0.16    0.871    
-ChannelChannel_11   0.7510     0.6649    1.13    0.259    
-ChannelChannel_2   -9.5839    97.7185   -0.10    0.922    
-ChannelChannel_3   -5.8945     1.0160   -5.80  6.6e-09 ***
-ChannelChannel_4    1.1831     0.6620    1.79    0.074 .  
-ChannelChannel_5   -5.6797     0.7779   -7.30  2.9e-13 ***
-ChannelChannel_6   -7.8762     1.2089   -6.52  7.3e-11 ***
-ChannelChannel_7    0.2700     0.6617    0.41    0.683    
-ChannelChannel_8   -2.6252     0.6643   -3.95  7.8e-05 ***
-ChannelChannel_9    2.4005     1.2427    1.93    0.053 .  
+                   Estimate Std. Error z value Pr(>|z|)    
+(Intercept)         -0.0814     0.8127   -0.10     0.92    
+nContractQuantity    1.9692     0.0326   60.38  < 2e-16 ***
+nInvoicePrice        0.7394     0.0259   28.52  < 2e-16 ***
+ChannelChannel_10   -1.1294     0.8219   -1.37     0.17    
+ChannelChannel_11   -0.2634     0.8162   -0.32     0.75    
+ChannelChannel_2   -15.1576  2399.5449   -0.01     0.99    
+ChannelChannel_3    -7.0863     1.3056   -5.43  5.7e-08 ***
+ChannelChannel_4     0.2501     0.8136    0.31     0.76    
+ChannelChannel_5    -6.2129     0.8818   -7.05  1.8e-12 ***
+ChannelChannel_6   -19.7601   140.7232   -0.14     0.89    
+ChannelChannel_7    -0.7086     0.8133   -0.87     0.38    
+ChannelChannel_8    -3.7212     0.8164   -4.56  5.2e-06 ***
+ChannelChannel_9    15.3863   548.5420    0.03     0.98    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 (Dispersion parameter for binomial family taken to be 1)
 
-    Null deviance: 24022  on 19001  degrees of freedom
-Residual deviance: 13648  on 18989  degrees of freedom
-AIC: 13674
+    Null deviance: 23956  on 19001  degrees of freedom
+Residual deviance: 13368  on 18989  degrees of freedom
+AIC: 13394
 
-Number of Fisher Scoring iterations: 10
+Number of Fisher Scoring iterations: 15
 ```
 
 
@@ -149,8 +148,8 @@ logistic1.table
 ```
        
         FALSE TRUE
-  FALSE  4850  765
-  TRUE    612 1918
+  FALSE  4768  806
+  TRUE    649 1922
 ```
 
 
@@ -172,143 +171,143 @@ glm(formula = isDiscount ~ nContractQuantity + nInvoicePrice +
 
 Deviance Residuals: 
    Min      1Q  Median      3Q     Max  
--3.321  -0.398  -0.085   0.380   4.150  
+-3.416  -0.381  -0.082   0.362   4.224  
 
 Coefficients:
                         Estimate Std. Error z value Pr(>|z|)    
-(Intercept)              -1.2063     0.8316   -1.45  0.14687    
-nContractQuantity         2.2342     0.0400   55.92  < 2e-16 ***
-nInvoicePrice             0.8710     0.0329   26.44  < 2e-16 ***
-ChannelChannel_10         1.8274     0.9294    1.97  0.04926 *  
-ChannelChannel_11         0.6947     0.8017    0.87  0.38620    
-ChannelChannel_2         -9.6824  3228.7418    0.00  0.99761    
-ChannelChannel_3         -6.6024     1.1442   -5.77  7.9e-09 ***
-ChannelChannel_4          1.3169     0.7971    1.65  0.09849 .  
-ChannelChannel_5         -3.6490     1.0443   -3.49  0.00048 ***
-ChannelChannel_6        -19.3690   535.3239   -0.04  0.97114    
-ChannelChannel_7          1.1817     0.8041    1.47  0.14167    
-ChannelChannel_8         -0.0690     0.9292   -0.07  0.94082    
-ChannelChannel_9          1.9336     1.3340    1.45  0.14720    
-TerritoryTerritory_10     0.3251     0.3221    1.01  0.31282    
-TerritoryTerritory_100  -19.7149  1692.2779   -0.01  0.99070    
-TerritoryTerritory_101  -18.5942  6522.6386    0.00  0.99773    
-TerritoryTerritory_102  -18.4707  2120.2006   -0.01  0.99305    
-TerritoryTerritory_103   -0.3547     0.3276   -1.08  0.27894    
-TerritoryTerritory_104  -19.2357  2151.7262   -0.01  0.99287    
-TerritoryTerritory_105  -19.3431   794.3994   -0.02  0.98057    
-TerritoryTerritory_106   -3.2595  3905.5584    0.00  0.99933    
-TerritoryTerritory_107  -18.6251   748.8301   -0.02  0.98016    
-TerritoryTerritory_108   -1.9017     0.4455   -4.27  2.0e-05 ***
-TerritoryTerritory_109  -20.7511  1524.2786   -0.01  0.98914    
-TerritoryTerritory_11     0.0726     0.3342    0.22  0.82801    
-TerritoryTerritory_110    0.2981     0.6741    0.44  0.65835    
-TerritoryTerritory_111   -5.3330     0.6026   -8.85  < 2e-16 ***
-TerritoryTerritory_112   -1.1205     0.4994   -2.24  0.02487 *  
-TerritoryTerritory_113   -1.0372     0.6978   -1.49  0.13720    
-TerritoryTerritory_12    -1.7218     0.6025   -2.86  0.00426 ** 
-TerritoryTerritory_13    -0.2921  3555.6540    0.00  0.99993    
-TerritoryTerritory_14     0.3275     0.3310    0.99  0.32251    
-TerritoryTerritory_15    -6.5448     0.4110  -15.92  < 2e-16 ***
-TerritoryTerritory_16     0.2481     0.3313    0.75  0.45400    
-TerritoryTerritory_17     0.0936     0.3275    0.29  0.77510    
-TerritoryTerritory_18   -17.5497  1175.3462   -0.01  0.98809    
-TerritoryTerritory_19    -0.4462     0.2449   -1.82  0.06845 .  
-TerritoryTerritory_2     -1.3773     0.3917   -3.52  0.00044 ***
-TerritoryTerritory_20   -18.1260  4557.8691    0.00  0.99683    
-TerritoryTerritory_21     0.0938     0.3484    0.27  0.78770    
-TerritoryTerritory_22    -0.0764     0.3182   -0.24  0.81020    
-TerritoryTerritory_23     0.1653     0.2887    0.57  0.56706    
-TerritoryTerritory_24   -16.7655  2602.2358   -0.01  0.99486    
-TerritoryTerritory_25     0.4414     0.2692    1.64  0.10107    
-TerritoryTerritory_26     0.3750     0.2797    1.34  0.18003    
-TerritoryTerritory_27     0.4708     0.2803    1.68  0.09302 .  
-TerritoryTerritory_28    -0.3349     0.2419   -1.38  0.16619    
-TerritoryTerritory_29    -0.0589     0.2383   -0.25  0.80490    
-TerritoryTerritory_3     -1.2567     0.5790   -2.17  0.02998 *  
-TerritoryTerritory_30    -1.6479     0.6151   -2.68  0.00738 ** 
-TerritoryTerritory_31    -0.3654     0.2490   -1.47  0.14226    
-TerritoryTerritory_32    -2.5062     0.2515   -9.96  < 2e-16 ***
-TerritoryTerritory_33     0.0717     0.2474    0.29  0.77208    
-TerritoryTerritory_34     0.0230     0.3262    0.07  0.94375    
-TerritoryTerritory_35    -0.2708     0.2413   -1.12  0.26166    
-TerritoryTerritory_36   -14.7309  1400.6127   -0.01  0.99161    
-TerritoryTerritory_37     0.2066     0.4932    0.42  0.67533    
-TerritoryTerritory_38    -0.1560     0.2362   -0.66  0.50891    
-TerritoryTerritory_39    -0.5560     0.3201   -1.74  0.08242 .  
-TerritoryTerritory_4    -18.3075  1427.2436   -0.01  0.98977    
-TerritoryTerritory_40     0.7268     0.4534    1.60  0.10898    
-TerritoryTerritory_41   -17.5697   644.2042   -0.03  0.97824    
-TerritoryTerritory_42   -18.7895   622.4226   -0.03  0.97592    
-TerritoryTerritory_43    -1.8274  1497.5242    0.00  0.99903    
-TerritoryTerritory_44    -0.1761  1751.3311    0.00  0.99992    
-TerritoryTerritory_45    -2.0873     0.5456   -3.83  0.00013 ***
-TerritoryTerritory_46   -17.3656  2266.6448   -0.01  0.99389    
-TerritoryTerritory_47   -17.9819  6522.6386    0.00  0.99780    
-TerritoryTerritory_48   -18.7482  3540.7131   -0.01  0.99578    
-TerritoryTerritory_49     0.7639     0.3306    2.31  0.02086 *  
-TerritoryTerritory_5     -2.1890     0.5697   -3.84  0.00012 ***
-TerritoryTerritory_50    -3.0255     0.5598   -5.40  6.5e-08 ***
-TerritoryTerritory_51   -16.8547   700.0053   -0.02  0.98079    
-TerritoryTerritory_52     0.5474     0.3781    1.45  0.14768    
-TerritoryTerritory_53    -0.6556     0.3200   -2.05  0.04051 *  
-TerritoryTerritory_54     0.1196     0.2963    0.40  0.68642    
-TerritoryTerritory_55    -2.5084     1.1546   -2.17  0.02981 *  
-TerritoryTerritory_56   -17.7055  1664.7913   -0.01  0.99151    
-TerritoryTerritory_57    -3.8308     0.6858   -5.59  2.3e-08 ***
-TerritoryTerritory_58   -18.8897   593.7360   -0.03  0.97462    
-TerritoryTerritory_59   -17.5194  1729.9930   -0.01  0.99192    
-TerritoryTerritory_6    -17.7668  1000.8137   -0.02  0.98584    
-TerritoryTerritory_60    -3.1047  1402.6841    0.00  0.99823    
-TerritoryTerritory_61   -18.3951   637.6545   -0.03  0.97699    
-TerritoryTerritory_62   -18.2855  1773.4265   -0.01  0.99177    
-TerritoryTerritory_63     0.7132     0.3871    1.84  0.06538 .  
-TerritoryTerritory_64     1.5659  1569.8466    0.00  0.99920    
-TerritoryTerritory_65   -17.5998   564.3258   -0.03  0.97512    
-TerritoryTerritory_66   -18.2307   769.6978   -0.02  0.98110    
-TerritoryTerritory_67    -0.0147     0.3555   -0.04  0.96705    
-TerritoryTerritory_68    -2.0870     0.9008   -2.32  0.02051 *  
-TerritoryTerritory_69   -17.4679   575.8220   -0.03  0.97580    
-TerritoryTerritory_7    -17.1491  6522.6386    0.00  0.99790    
-TerritoryTerritory_70    -2.7538     0.7165   -3.84  0.00012 ***
-TerritoryTerritory_71    -0.2316     0.4982   -0.46  0.64206    
-TerritoryTerritory_72     1.5719     0.6885    2.28  0.02243 *  
-TerritoryTerritory_73   -18.0649  1423.1417   -0.01  0.98987    
-TerritoryTerritory_74    -3.6802     1.2274   -3.00  0.00271 ** 
-TerritoryTerritory_75    -1.1273     0.5543   -2.03  0.04196 *  
-TerritoryTerritory_76     0.1385  6544.5692    0.00  0.99998    
-TerritoryTerritory_77     1.5326  1695.5608    0.00  0.99928    
-TerritoryTerritory_78     0.6566     0.4240    1.55  0.12153    
-TerritoryTerritory_79     0.2701     0.3522    0.77  0.44317    
-TerritoryTerritory_8      0.0476     0.5967    0.08  0.93639    
-TerritoryTerritory_80    -0.2828  2281.5036    0.00  0.99990    
-TerritoryTerritory_81   -17.1366  2434.5462   -0.01  0.99438    
-TerritoryTerritory_82    -0.0103     0.3345   -0.03  0.97543    
-TerritoryTerritory_83     0.6787  1945.4580    0.00  0.99972    
-TerritoryTerritory_84    -4.5645  6544.5692    0.00  0.99944    
-TerritoryTerritory_85   -18.5462   688.5654   -0.03  0.97851    
-TerritoryTerritory_86   -15.5893  6522.6386    0.00  0.99809    
-TerritoryTerritory_87   -17.3311  1410.0258   -0.01  0.99019    
-TerritoryTerritory_88     0.2055     0.3238    0.63  0.52564    
-TerritoryTerritory_89   -20.0665  3225.9080   -0.01  0.99504    
-TerritoryTerritory_9     -0.2064     0.6201   -0.33  0.73928    
-TerritoryTerritory_90    -1.8989     0.5749   -3.30  0.00096 ***
-TerritoryTerritory_91    -0.0782     0.3639   -0.21  0.82982    
-TerritoryTerritory_92     0.3765     0.2536    1.48  0.13767    
-TerritoryTerritory_93   -18.0744   740.4881   -0.02  0.98053    
-TerritoryTerritory_94    -1.5946     0.5688   -2.80  0.00506 ** 
-TerritoryTerritory_95    13.5472   535.3241    0.03  0.97981    
-TerritoryTerritory_96   -18.4861  3613.3849   -0.01  0.99592    
-TerritoryTerritory_97    -0.0271     0.2912   -0.09  0.92592    
-TerritoryTerritory_98   -17.2419   784.8222   -0.02  0.98247    
-TerritoryTerritory_99    -2.2429     0.9024   -2.49  0.01294 *  
+(Intercept)             1.05e-01   1.02e+00    0.10   0.9182    
+nContractQuantity       2.31e+00   4.12e-02   56.00  < 2e-16 ***
+nInvoicePrice           9.00e-01   3.30e-02   27.32  < 2e-16 ***
+ChannelChannel_10       1.03e+00   1.12e+00    0.92   0.3573    
+ChannelChannel_11      -6.90e-01   9.98e-01   -0.69   0.4893    
+ChannelChannel_2       -1.02e+01   6.52e+03    0.00   0.9987    
+ChannelChannel_3       -8.06e+00   1.44e+00   -5.61  2.0e-08 ***
+ChannelChannel_4       -4.37e-03   9.93e-01    0.00   0.9965    
+ChannelChannel_5       -4.96e+00   1.21e+00   -4.11  3.9e-05 ***
+ChannelChannel_6       -3.27e+01   6.73e+02   -0.05   0.9612    
+ChannelChannel_7       -8.31e-02   1.00e+00   -0.08   0.9338    
+ChannelChannel_8       -1.85e+00   1.14e+00   -1.63   0.1034    
+ChannelChannel_9        1.67e+01   1.46e+03    0.01   0.9908    
+TerritoryTerritory_10   5.48e-01   3.27e-01    1.68   0.0932 .  
+TerritoryTerritory_100 -2.03e+01   1.59e+03   -0.01   0.9898    
+TerritoryTerritory_101 -1.77e+01   4.11e+03    0.00   0.9966    
+TerritoryTerritory_102 -1.87e+01   2.12e+03   -0.01   0.9930    
+TerritoryTerritory_103 -3.20e-01   3.40e-01   -0.94   0.3453    
+TerritoryTerritory_104 -1.97e+01   2.60e+03   -0.01   0.9940    
+TerritoryTerritory_105 -1.94e+01   8.71e+02   -0.02   0.9822    
+TerritoryTerritory_106  8.72e+00   3.95e+03    0.00   0.9982    
+TerritoryTerritory_107 -1.78e+01   7.72e+02   -0.02   0.9816    
+TerritoryTerritory_108 -1.95e+00   4.80e-01   -4.07  4.7e-05 ***
+TerritoryTerritory_109 -2.04e+01   1.62e+03   -0.01   0.9900    
+TerritoryTerritory_11  -1.65e-01   3.38e-01   -0.49   0.6261    
+TerritoryTerritory_110  7.23e-01   7.42e-01    0.97   0.3301    
+TerritoryTerritory_111 -5.20e+00   6.65e-01   -7.81  5.7e-15 ***
+TerritoryTerritory_112 -1.32e+00   5.67e-01   -2.33   0.0199 *  
+TerritoryTerritory_113 -1.06e+00   7.44e-01   -1.43   0.1527    
+TerritoryTerritory_12  -1.35e+00   6.60e-01   -2.05   0.0407 *  
+TerritoryTerritory_13   1.21e+01   6.56e+03    0.00   0.9985    
+TerritoryTerritory_14   1.32e-01   3.19e-01    0.42   0.6779    
+TerritoryTerritory_15  -6.83e+00   4.43e-01  -15.41  < 2e-16 ***
+TerritoryTerritory_16   2.61e-01   3.42e-01    0.76   0.4450    
+TerritoryTerritory_17   2.63e-01   3.32e-01    0.79   0.4270    
+TerritoryTerritory_18  -1.68e+01   1.14e+03   -0.01   0.9883    
+TerritoryTerritory_19  -6.99e-01   2.47e-01   -2.83   0.0047 ** 
+TerritoryTerritory_2   -1.22e+00   3.85e-01   -3.18   0.0015 ** 
+TerritoryTerritory_20  -1.84e+01   3.16e+03   -0.01   0.9954    
+TerritoryTerritory_21   2.67e-02   3.60e-01    0.07   0.9410    
+TerritoryTerritory_22   1.12e-01   3.15e-01    0.36   0.7217    
+TerritoryTerritory_23   1.77e-01   2.91e-01    0.61   0.5439    
+TerritoryTerritory_24  -1.68e+01   2.41e+03   -0.01   0.9944    
+TerritoryTerritory_25   4.15e-01   2.72e-01    1.53   0.1272    
+TerritoryTerritory_26   4.61e-01   2.83e-01    1.63   0.1040    
+TerritoryTerritory_27   4.51e-01   2.82e-01    1.60   0.1089    
+TerritoryTerritory_28  -4.24e-01   2.42e-01   -1.75   0.0805 .  
+TerritoryTerritory_29  -1.27e-01   2.39e-01   -0.53   0.5955    
+TerritoryTerritory_3   -1.73e+00   6.11e-01   -2.83   0.0046 ** 
+TerritoryTerritory_30  -2.54e+00   6.43e-01   -3.96  7.6e-05 ***
+TerritoryTerritory_31  -2.88e-01   2.51e-01   -1.15   0.2500    
+TerritoryTerritory_32  -2.62e+00   2.51e-01  -10.44  < 2e-16 ***
+TerritoryTerritory_33  -3.37e-02   2.52e-01   -0.13   0.8935    
+TerritoryTerritory_34   1.45e-01   3.27e-01    0.44   0.6579    
+TerritoryTerritory_35  -3.40e-01   2.43e-01   -1.40   0.1610    
+TerritoryTerritory_36  -1.47e+01   1.13e+03   -0.01   0.9896    
+TerritoryTerritory_37   5.28e-01   5.05e-01    1.05   0.2953    
+TerritoryTerritory_38  -2.67e-01   2.37e-01   -1.13   0.2600    
+TerritoryTerritory_39  -4.44e-01   3.25e-01   -1.36   0.1723    
+TerritoryTerritory_4   -1.86e+01   1.61e+03   -0.01   0.9908    
+TerritoryTerritory_40   1.01e+00   4.56e-01    2.22   0.0265 *  
+TerritoryTerritory_41  -1.78e+01   6.57e+02   -0.03   0.9784    
+TerritoryTerritory_42  -1.94e+01   6.39e+02   -0.03   0.9757    
+TerritoryTerritory_43   1.00e+01   1.49e+03    0.01   0.9947    
+TerritoryTerritory_44   1.17e+01   1.94e+03    0.01   0.9952    
+TerritoryTerritory_45  -1.71e+00   6.13e-01   -2.80   0.0051 ** 
+TerritoryTerritory_46  -1.71e+01   1.89e+03   -0.01   0.9928    
+TerritoryTerritory_47  -1.76e+01   4.52e+03    0.00   0.9969    
+TerritoryTerritory_48  -1.82e+01   3.71e+03    0.00   0.9961    
+TerritoryTerritory_49   6.19e-01   3.35e-01    1.85   0.0647 .  
+TerritoryTerritory_5   -1.62e+00   6.34e-01   -2.56   0.0105 *  
+TerritoryTerritory_50  -2.64e+00   6.26e-01   -4.21  2.6e-05 ***
+TerritoryTerritory_51  -1.65e+01   7.30e+02   -0.02   0.9819    
+TerritoryTerritory_52   4.85e-01   3.72e-01    1.31   0.1915    
+TerritoryTerritory_53  -2.09e-01   3.22e-01   -0.65   0.5167    
+TerritoryTerritory_54   2.27e-01   3.02e-01    0.75   0.4528    
+TerritoryTerritory_55  -3.31e+00   1.32e+00   -2.51   0.0120 *  
+TerritoryTerritory_56  -1.76e+01   1.86e+03   -0.01   0.9925    
+TerritoryTerritory_57  -4.43e+00   7.07e-01   -6.27  3.7e-10 ***
+TerritoryTerritory_58  -1.93e+01   6.42e+02   -0.03   0.9760    
+TerritoryTerritory_59  -1.76e+01   1.82e+03   -0.01   0.9923    
+TerritoryTerritory_6   -1.72e+01   9.56e+02   -0.02   0.9856    
+TerritoryTerritory_60   9.04e+00   1.47e+03    0.01   0.9951    
+TerritoryTerritory_61  -1.89e+01   6.17e+02   -0.03   0.9755    
+TerritoryTerritory_62  -1.84e+01   1.95e+03   -0.01   0.9924    
+TerritoryTerritory_63   7.05e-01   3.96e-01    1.78   0.0751 .  
+TerritoryTerritory_64   1.32e+01   1.97e+03    0.01   0.9947    
+TerritoryTerritory_65  -1.75e+01   6.10e+02   -0.03   0.9770    
+TerritoryTerritory_66  -1.77e+01   7.49e+02   -0.02   0.9811    
+TerritoryTerritory_67   3.31e-02   3.44e-01    0.10   0.9234    
+TerritoryTerritory_68  -2.29e+00   9.97e-01   -2.29   0.0217 *  
+TerritoryTerritory_69  -1.85e+01   5.38e+02   -0.03   0.9725    
+TerritoryTerritory_7   -1.72e+01   6.52e+03    0.00   0.9979    
+TerritoryTerritory_70  -2.26e+00   7.77e-01   -2.91   0.0036 ** 
+TerritoryTerritory_71  -3.88e-01   4.93e-01   -0.79   0.4314    
+TerritoryTerritory_72   7.22e-01   5.65e-01    1.28   0.2011    
+TerritoryTerritory_73  -1.84e+01   1.22e+03   -0.02   0.9880    
+TerritoryTerritory_74  -4.58e+00   1.14e+00   -4.01  6.0e-05 ***
+TerritoryTerritory_75  -1.64e+00   5.71e-01   -2.88   0.0040 ** 
+TerritoryTerritory_76   1.21e+01   6.56e+03    0.00   0.9985    
+TerritoryTerritory_77   1.33e+01   1.63e+03    0.01   0.9935    
+TerritoryTerritory_78   6.99e-01   4.25e-01    1.64   0.1002    
+TerritoryTerritory_79   4.59e-01   3.55e-01    1.30   0.1953    
+TerritoryTerritory_8   -3.65e-01   5.44e-01   -0.67   0.5020    
+TerritoryTerritory_80   1.13e+01   2.48e+03    0.00   0.9964    
+TerritoryTerritory_81  -1.71e+01   2.89e+03   -0.01   0.9953    
+TerritoryTerritory_82   7.07e-02   3.40e-01    0.21   0.8354    
+TerritoryTerritory_83   1.31e+01   1.70e+03    0.01   0.9939    
+TerritoryTerritory_84   7.26e+00   6.56e+03    0.00   0.9991    
+TerritoryTerritory_85  -1.80e+01   7.64e+02   -0.02   0.9812    
+TerritoryTerritory_86  -1.57e+01   6.52e+03    0.00   0.9981    
+TerritoryTerritory_87  -1.73e+01   1.51e+03   -0.01   0.9908    
+TerritoryTerritory_88   2.61e-01   3.26e-01    0.80   0.4228    
+TerritoryTerritory_89  -1.98e+01   2.97e+03   -0.01   0.9947    
+TerritoryTerritory_9   -8.02e-01   7.71e-01   -1.04   0.2987    
+TerritoryTerritory_90  -1.48e+00   6.38e-01   -2.31   0.0208 *  
+TerritoryTerritory_91   2.01e-01   3.77e-01    0.53   0.5938    
+TerritoryTerritory_92   3.95e-01   2.55e-01    1.55   0.1219    
+TerritoryTerritory_93  -1.80e+01   6.91e+02   -0.03   0.9792    
+TerritoryTerritory_94  -1.29e+00   6.40e-01   -2.02   0.0435 *  
+TerritoryTerritory_95   1.13e+01   4.92e+02    0.02   0.9816    
+TerritoryTerritory_96  -1.81e+01   3.13e+03   -0.01   0.9954    
+TerritoryTerritory_97   1.73e-01   2.88e-01    0.60   0.5478    
+TerritoryTerritory_98  -1.74e+01   7.97e+02   -0.02   0.9826    
+TerritoryTerritory_99  -1.62e+00   8.44e-01   -1.92   0.0544 .  
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 (Dispersion parameter for binomial family taken to be 1)
 
-    Null deviance: 24022  on 19001  degrees of freedom
-Residual deviance: 11250  on 18877  degrees of freedom
-AIC: 11500
+    Null deviance: 23956  on 19001  degrees of freedom
+Residual deviance: 10956  on 18877  degrees of freedom
+AIC: 11206
 
 Number of Fisher Scoring iterations: 17
 ```
@@ -328,8 +327,8 @@ logistic2.table
 ```
        
         FALSE TRUE
-  FALSE  4764 1153
-  TRUE    698 1530
+  FALSE  4876  501
+  TRUE    541 2227
 ```
 
 
@@ -374,215 +373,171 @@ rpart(formula = as.factor(isDiscount) ~ nContractQuantity + nInvoicePrice +
     Channel + Territory, data = dataT)
   n= 19002 
 
-       CP nsplit rel error xerror     xstd
-1 0.32478      0    1.0000 1.0000 0.010406
-2 0.01529      2    0.3504 0.3516 0.007076
-3 0.01319      9    0.2370 0.2404 0.005970
-4 0.01000     10    0.2238 0.2322 0.005875
+      CP nsplit rel error xerror     xstd
+1 0.3284      0    1.0000 1.0000 0.010462
+2 0.0137      2    0.3431 0.3438 0.007035
+3 0.0100      8    0.2337 0.2368 0.005952
 
 Variable importance
-nContractQuantity         Territory     nInvoicePrice           Channel 
-               30                30                20                20 
+nContractQuantity         Territory           Channel     nInvoicePrice 
+               31                31                20                19 
 
-Node number 1: 19002 observations,    complexity param=0.3248
-  predicted class=FALSE  expected loss=0.3271  P(node) =1
-    class counts: 12787  6215
-   probabilities: 0.673 0.327 
-  left son=2 (9257 obs) right son=3 (9745 obs)
+Node number 1: 19002 observations,    complexity param=0.3284
+  predicted class=FALSE  expected loss=0.3247  P(node) =1
+    class counts: 12832  6170
+   probabilities: 0.675 0.325 
+  left son=2 (9275 obs) right son=3 (9727 obs)
   Primary splits:
-      nContractQuantity < -0.06641  to the left,  improve=2799.0, (0 missing)
-      Territory         splits as  LRLLLRLLLLLLRRLRLLLRLRRLRLLRRRLRRRRRRRRLRRRLRRRLRLLLLLLLLRLLLRRRLLLLLLLLLRLLLRRLLLRRLLRLLRRRLLRLLLLLRLLLRRLLLLRLL, improve=2057.0, (0 missing)
-      Channel           splits as  RLRLLRLLLLR, improve=1202.0, (0 missing)
-      nInvoicePrice     < 0.9469    to the right, improve= 308.7, (0 missing)
+      nContractQuantity < -0.06641  to the left,  improve=2781.0, (0 missing)
+      Territory         splits as  LRLLLRLLLLLLRRLRLLLRLRRLLLLRRRLRRRRLRRRLRRRLRRRLRLLLLLLLLRLLLRRRLLLLLLLLLRLLLRRLLLRRLLRLLRRRLLRLLLLLRLLLRRLLLLRLL, improve=2033.0, (0 missing)
+      Channel           splits as  RLRLLRLLLLR, improve=1233.0, (0 missing)
+      nInvoicePrice     < 0.9469    to the right, improve= 293.6, (0 missing)
   Surrogate splits:
-      Territory     splits as  LRLLLRLLRRRRRLRRLLRRLRRLLLLRRRLRRRRLRRRLLRRRRLRLRLLRRLLLLRLLLRRRRRRLLLRLLRLLLRLLLRRRLRRLLRRRRLRRRLRLRLLRRRLLRLRLR, agree=0.663, adj=0.308, (0 split)
-      Channel       splits as  RRRRRRRRLLR, agree=0.615, adj=0.209, (0 split)
-      nInvoicePrice < 0.6726    to the right, agree=0.610, adj=0.200, (0 split)
+      Territory     splits as  LRLLLRLLRRRRRLRRLLRRLRRLLLLRRRLRRRRLRRRLLRRRRLRLRLLRRLLLLRLLLRRRRRLLLLRLLRRLLRLLLRRRLRRLLRRRRLRLRLRLRLLLRRLLRLRLL, agree=0.662, adj=0.307, (0 split)
+      Channel       splits as  RRRRRRRRLLR, agree=0.612, adj=0.204, (0 split)
+      nInvoicePrice < 0.6726    to the right, agree=0.608, adj=0.198, (0 split)
 
-Node number 2: 9257 observations
-  predicted class=FALSE  expected loss=0.04861  P(node) =0.4872
-    class counts:  8807   450
-   probabilities: 0.951 0.049 
+Node number 2: 9275 observations
+  predicted class=FALSE  expected loss=0.04765  P(node) =0.4881
+    class counts:  8833   442
+   probabilities: 0.952 0.048 
 
-Node number 3: 9745 observations,    complexity param=0.3248
-  predicted class=TRUE   expected loss=0.4084  P(node) =0.5128
-    class counts:  3980  5765
-   probabilities: 0.408 0.592 
-  left son=6 (3044 obs) right son=7 (6701 obs)
+Node number 3: 9727 observations,    complexity param=0.3284
+  predicted class=TRUE   expected loss=0.4111  P(node) =0.5119
+    class counts:  3999  5728
+   probabilities: 0.411 0.589 
+  left son=6 (3132 obs) right son=7 (6595 obs)
   Primary splits:
-      Territory         splits as  LR---RLLLLRLRRLRRLLRLRRLRL-RRRLRRRRRRRRLRRRLRRR-RLLLLL---RLLLRRRLLLLLLLL-RLLLRRL-LRRLLR-LRRRL-RLLLL-RL-LRRLLL-RLL, improve=1886.00, (0 missing)
-      Channel           splits as  RRRLLRLLRLR, improve=1266.00, (0 missing)
-      nInvoicePrice     < 0.3331    to the left,  improve= 480.00, (0 missing)
-      nContractQuantity < 0.05166   to the left,  improve=  75.18, (0 missing)
+      Territory         splits as  LR---RLLLLLLRRLRRLLRLRRLRL-RRRLRRRRRRRRLRRRLRRR-RLLLLL---RLLLRRRLLLLLLLL-RLLLRRL-LRR-LR-LRRRL-RLLLL-RL-LRRLLL-RLL, improve=1954.00, (0 missing)
+      Channel           splits as  RRRLLRLLRLR, improve=1308.00, (0 missing)
+      nInvoicePrice     < 0.3572    to the left,  improve= 473.30, (0 missing)
+      nContractQuantity < 0.05166   to the left,  improve=  76.79, (0 missing)
   Surrogate splits:
-      Channel           splits as  RRRLRRLLRLR, agree=0.890, adj=0.648, (0 split)
-      nInvoicePrice     < -1.466    to the left,  agree=0.730, adj=0.134, (0 split)
-      nContractQuantity < 2.379     to the right, agree=0.693, adj=0.017, (0 split)
+      Channel           splits as  RRRLRRLLRLR, agree=0.885, adj=0.643, (0 split)
+      nInvoicePrice     < -1.466    to the left,  agree=0.722, adj=0.136, (0 split)
+      nContractQuantity < 2.386     to the right, agree=0.685, adj=0.021, (0 split)
 
-Node number 6: 3044 observations
-  predicted class=FALSE  expected loss=0.1301  P(node) =0.1602
-    class counts:  2648   396
-   probabilities: 0.870 0.130 
+Node number 6: 3132 observations
+  predicted class=FALSE  expected loss=0.129  P(node) =0.1648
+    class counts:  2728   404
+   probabilities: 0.871 0.129 
 
-Node number 7: 6701 observations,    complexity param=0.01529
-  predicted class=TRUE   expected loss=0.1988  P(node) =0.3526
-    class counts:  1332  5369
-   probabilities: 0.199 0.801 
-  left son=14 (4115 obs) right son=15 (2586 obs)
+Node number 7: 6595 observations,    complexity param=0.0137
+  predicted class=TRUE   expected loss=0.1927  P(node) =0.3471
+    class counts:  1271  5324
+   probabilities: 0.193 0.807 
+  left son=14 (4058 obs) right son=15 (2537 obs)
   Primary splits:
-      nInvoicePrice     < 0.315     to the left,  improve=192.60, (0 missing)
-      Channel           splits as  RRR-LR-LRRR, improve= 77.92, (0 missing)
-      nContractQuantity < 0.9959    to the left,  improve= 71.48, (0 missing)
-      Territory         splits as  -R---L----L-RR-LR--R-LR-L--LLR-RLRLLLLL-RRR-RRL-R--------R---RLR---------R---LR---LR--L--RRR--R-----R---LR----L--, improve= 36.87, (0 missing)
+      nInvoicePrice     < 0.315     to the left,  improve=188.90, (0 missing)
+      Channel           splits as  RRR-LR-LRRR, improve= 78.35, (0 missing)
+      nContractQuantity < 0.9959    to the left,  improve= 69.91, (0 missing)
+      Territory         splits as  -R---L------LR-LR--L-LR-L--LLR-RLRLLLLL-RRR-RRR-R--------R---RRR---------R---LR---LR--L--RRL--R-----R---RR----R--, improve= 35.35, (0 missing)
   Surrogate splits:
-      Territory         splits as  -L---L----R-LR-LR--L-LL-L--LLL-LLLLLRRL-LLL-RLL-L--------L---RLL---------L---LR---LR--L--LLL--L-----L---LL----L--, agree=0.628, adj=0.035, (0 split)
-      nContractQuantity < -0.004792 to the right, agree=0.622, adj=0.020, (0 split)
-      Channel           splits as  LRL-LL-RLLR, agree=0.619, adj=0.013, (0 split)
+      nContractQuantity < -0.004792 to the right, agree=0.622, adj=0.018, (0 split)
+      Territory         splits as  -L---L------LR-LL--L-LL-L--LLL-LLLLLRRL-LLL-RLL-L--------L---LRL---------L---LR---LR--L--LLL--L-----L---LL----L--, agree=0.622, adj=0.017, (0 split)
+      Channel           splits as  LRL-LL-RLLR, agree=0.620, adj=0.013, (0 split)
 
-Node number 14: 4115 observations,    complexity param=0.01529
-  predicted class=TRUE   expected loss=0.2938  P(node) =0.2166
-    class counts:  1209  2906
-   probabilities: 0.294 0.706 
-  left son=28 (218 obs) right son=29 (3897 obs)
+Node number 14: 4058 observations,    complexity param=0.0137
+  predicted class=TRUE   expected loss=0.2873  P(node) =0.2136
+    class counts:  1166  2892
+   probabilities: 0.287 0.713 
+  left son=28 (169 obs) right son=29 (3889 obs)
   Primary splits:
-      nInvoicePrice     < 0.2141    to the right, improve=189.70, (0 missing)
-      nContractQuantity < 0.655     to the left,  improve= 85.58, (0 missing)
-      Territory         splits as  -R---L------R--LR--R-RR-L--LLR-RRRLRLLL-LRR-RRL-R--------R---RLR---------R---R----LR--L--RRR--R-----R---LR----R--, improve= 39.59, (0 missing)
-      Channel           splits as  RRR-LR-LRLR, improve= 35.45, (0 missing)
+      nInvoicePrice     < 0.2598    to the right, improve=179.10, (0 missing)
+      nContractQuantity < 0.655     to the left,  improve= 88.63, (0 missing)
+      Channel           splits as  RRR-LR-LRLR, improve= 36.87, (0 missing)
+      Territory         splits as  -R---L------R--LR--L-RR-L--LRR-RRRLLLLL-LRR-RRR-R--------R---RLR---------R---R----LR--L--RRR--R-----R---RR----R--, improve= 36.36, (0 missing)
 
-Node number 15: 2586 observations
-  predicted class=TRUE   expected loss=0.04756  P(node) =0.1361
-    class counts:   123  2463
-   probabilities: 0.048 0.952 
+Node number 15: 2537 observations
+  predicted class=TRUE   expected loss=0.04139  P(node) =0.1335
+    class counts:   105  2432
+   probabilities: 0.041 0.959 
 
-Node number 28: 218 observations
-  predicted class=FALSE  expected loss=0.06422  P(node) =0.01147
-    class counts:   204    14
-   probabilities: 0.936 0.064 
+Node number 28: 169 observations
+  predicted class=FALSE  expected loss=0  P(node) =0.008894
+    class counts:   169     0
+   probabilities: 1.000 0.000 
 
-Node number 29: 3897 observations,    complexity param=0.01529
-  predicted class=TRUE   expected loss=0.2579  P(node) =0.2051
-    class counts:  1005  2892
-   probabilities: 0.258 0.742 
-  left son=58 (3360 obs) right son=59 (537 obs)
+Node number 29: 3889 observations,    complexity param=0.0137
+  predicted class=TRUE   expected loss=0.2564  P(node) =0.2047
+    class counts:   997  2892
+   probabilities: 0.256 0.744 
+  left son=58 (947 obs) right son=59 (2942 obs)
   Primary splits:
-      nInvoicePrice     < 0.19      to the left,  improve=73.55, (0 missing)
-      Territory         splits as  -R---L------R--LR--R-LR-L--LLR-RLRLLLLL-LRL-RLR-R--------R---RLR---------R---R----LR--L--RRR--R-----R---RR----R--, improve=55.42, (0 missing)
-      nContractQuantity < 0.9959    to the left,  improve=54.77, (0 missing)
-      Channel           splits as  LLR-LR-LLLR, improve=41.27, (0 missing)
+      nInvoicePrice     < -1.193    to the left,  improve=65.54, (0 missing)
+      nContractQuantity < 0.9959    to the left,  improve=63.37, (0 missing)
+      Territory         splits as  -R---L------R--LR--L-RR-L--LRR-RLRLLLLL-LRL-RLR-R--------R---RRR---------R---R----RR--L--RRR--R-----R---RR----R--, improve=49.44, (0 missing)
+      Channel           splits as  RRR-LR-LRLR, improve=39.92, (0 missing)
   Surrogate splits:
-      nContractQuantity < -0.004792 to the right, agree=0.863, adj=0.007, (0 split)
-      Territory         splits as  -L---L------L--LL--L-LL-L--LLL-LLLLLLLL-LLL-RLL-L--------L---LLL---------L---L----LL--L--LLL--L-----L---LL----L--, agree=0.863, adj=0.004, (0 split)
+      nContractQuantity < 2.157     to the right, agree=0.768, adj=0.045, (0 split)
 
-Node number 58: 3360 observations,    complexity param=0.01529
-  predicted class=TRUE   expected loss=0.2967  P(node) =0.1768
-    class counts:   997  2363
-   probabilities: 0.297 0.703 
-  left son=116 (936 obs) right son=117 (2424 obs)
+Node number 58: 947 observations,    complexity param=0.0137
+  predicted class=TRUE   expected loss=0.4182  P(node) =0.04984
+    class counts:   396   551
+   probabilities: 0.418 0.582 
+  left son=116 (382 obs) right son=117 (565 obs)
   Primary splits:
-      nInvoicePrice     < -0.3178   to the right, improve=90.98, (0 missing)
-      Territory         splits as  -R---L------R--LR--R-RR-L--LLR-RLRLLLLL-LRL-RLR-R--------R---RLR---------R---R----RR--L--RRR--R-----R---RR----R--, improve=59.39, (0 missing)
-      nContractQuantity < 0.9959    to the left,  improve=55.82, (0 missing)
-      Channel           splits as  LLR-LR-LLLR, improve=44.97, (0 missing)
+      nInvoicePrice     < -1.257    to the right, improve=236.80, (0 missing)
+      nContractQuantity < 1.118     to the left,  improve= 71.70, (0 missing)
+      Territory         splits as  -R---L------R--L---L-RR-L--RRR-LLRLLLLL-LRL-RLL-R--------R---RRR---------R---R----R---R--RRR--R-----R---RR----R--, improve= 54.88, (0 missing)
+      Channel           splits as  -LR-LR--LLR, improve= 35.91, (0 missing)
   Surrogate splits:
-      Channel           splits as  LRL-LR-LRLR, agree=0.734, adj=0.044, (0 split)
-      Territory         splits as  -R---R------R--LL--R-RR-R--LRR-RRRRRRLR-RRR-RRR-R--------R---RRR---------R---R----RR--L--RRR--R-----R---RR----R--, agree=0.733, adj=0.042, (0 split)
-      nContractQuantity < -0.004792 to the left,  agree=0.722, adj=0.002, (0 split)
+      Territory         splits as  -R---L------R--R---R-RR-L--RRR-RRRRLLLL-LRL-RLR-R--------R---RLR---------R---R----R---R--RRR--R-----R---RR----R--, agree=0.676, adj=0.196, (0 split)
+      nContractQuantity < 1.002     to the left,  agree=0.671, adj=0.183, (0 split)
+      Channel           splits as  -RR-RR--LRR, agree=0.615, adj=0.045, (0 split)
 
-Node number 59: 537 observations
-  predicted class=TRUE   expected loss=0.0149  P(node) =0.02826
-    class counts:     8   529
-   probabilities: 0.015 0.985 
-
-Node number 116: 936 observations,    complexity param=0.01529
-  predicted class=TRUE   expected loss=0.484  P(node) =0.04926
-    class counts:   453   483
-   probabilities: 0.484 0.516 
-  left son=232 (428 obs) right son=233 (508 obs)
+Node number 59: 2942 observations,    complexity param=0.0137
+  predicted class=TRUE   expected loss=0.2043  P(node) =0.1548
+    class counts:   601  2341
+   probabilities: 0.204 0.796 
+  left son=118 (1479 obs) right son=119 (1463 obs)
   Primary splits:
-      nInvoicePrice     < -0.1532   to the left,  improve=145.20, (0 missing)
-      Territory         splits as  -R---R------R--RR--R-RR-L--LLR-RLRLLLRL-LRL-RLR-R--------L---RRR---------R---R----L---L--RRR--R-----L---RR----L--, improve= 59.30, (0 missing)
-      Channel           splits as  RRR-LR-LLL-, improve= 52.94, (0 missing)
-      nContractQuantity < 0.6768    to the left,  improve= 39.17, (0 missing)
+      nInvoicePrice     < -0.3441   to the right, improve=61.89, (0 missing)
+      Channel           splits as  RRR-LR-LRLR, improve=39.86, (0 missing)
+      nContractQuantity < 0.655     to the left,  improve=33.25, (0 missing)
+      Territory         splits as  -R---R------L--LL--R-RR-L--LRR-RRRLRLLR-RRR-RRR-R--------R---RRR---------R---L----LR--L--RRR--R-----L---RR----R--, improve=22.60, (0 missing)
   Surrogate splits:
-      Territory         splits as  -R---R------R--RR--R-RR-L--RRR-RLRLLRRL-LRL-LLL-R--------L---LLR---------L---R----R---L--RRR--R-----L---RR----R--, agree=0.666, adj=0.269, (0 split)
-      Channel           splits as  RRR-RR-LLR-, agree=0.657, adj=0.250, (0 split)
-      nContractQuantity < 0.9959    to the left,  agree=0.565, adj=0.049, (0 split)
+      Territory         splits as  -L---L------R--LL--L-RR-R--LLL-LRLRRLLR-RLL-LLR-L--------L---RLL---------L---R----RR--L--RLL--L-----R---RL----L--, agree=0.608, adj=0.212, (0 split)
+      nContractQuantity < 0.6325    to the right, agree=0.575, adj=0.146, (0 split)
+      Channel           splits as  LLL-LL-RRLL, agree=0.565, adj=0.126, (0 split)
 
-Node number 117: 2424 observations,    complexity param=0.01529
-  predicted class=TRUE   expected loss=0.2244  P(node) =0.1276
-    class counts:   544  1880
-   probabilities: 0.224 0.776 
-  left son=234 (923 obs) right son=235 (1501 obs)
-  Primary splits:
-      nInvoicePrice     < -1.193    to the left,  improve=122.20, (0 missing)
-      Territory         splits as  -R---L------R--R---R-RR-R--RRR-RLRLLLLL-LRL-RLR-R--------R---RLR---------R---R----RR--L--LRR--R-----R---RR----R--, improve= 45.98, (0 missing)
-      nContractQuantity < 0.534     to the left,  improve= 37.96, (0 missing)
-      Channel           splits as  LLR-LR-LLRR, improve= 27.65, (0 missing)
-  Surrogate splits:
-      nContractQuantity < 1.704     to the right, agree=0.665, adj=0.119, (0 split)
-      Territory         splits as  -L---R------R--R---L-RR-R--RRR-RRRLRRRL-RRR-LRR-L--------R---RLR---------R---R----LR--R--RRR--R-----R---RR----R--, agree=0.637, adj=0.047, (0 split)
-      Channel           splits as  RRR-LR-RRRR, agree=0.620, adj=0.002, (0 split)
-
-Node number 232: 428 observations
-  predicted class=FALSE  expected loss=0.2126  P(node) =0.02252
-    class counts:   337    91
-   probabilities: 0.787 0.213 
-
-Node number 233: 508 observations,    complexity param=0.01319
-  predicted class=TRUE   expected loss=0.2283  P(node) =0.02673
-    class counts:   116   392
-   probabilities: 0.228 0.772 
-  left son=466 (108 obs) right son=467 (400 obs)
-  Primary splits:
-      nInvoicePrice     < 0.02485   to the right, improve=116.40, (0 missing)
-      Territory         splits as  -R---L------R--RR--R-RR-L--LLR-RLRLRRRR-LRL--LR-R--------R---RRR---------R---R----L---L--RRR--R-----L---RR----L--, improve= 35.33, (0 missing)
-      Channel           splits as  RRR-LR--LL-, improve= 26.74, (0 missing)
-      nContractQuantity < 0.655     to the left,  improve= 11.55, (0 missing)
-  Surrogate splits:
-      Territory         splits as  -R---R------R--RR--R-RR-L--RLR-RLRLRRRR-LRR--RR-L--------R---RRR---------R---R----L---R--RRR--R-----R---RR----L--, agree=0.829, adj=0.194, (0 split)
-      Channel           splits as  RRR-LR--RR-, agree=0.823, adj=0.167, (0 split)
-      nContractQuantity < 0.05166   to the left,  agree=0.819, adj=0.148, (0 split)
-
-Node number 234: 923 observations,    complexity param=0.01529
-  predicted class=TRUE   expected loss=0.4269  P(node) =0.04857
-    class counts:   394   529
-   probabilities: 0.427 0.573 
-  left son=468 (387 obs) right son=469 (536 obs)
-  Primary splits:
-      nInvoicePrice     < -1.257    to the right, improve=235.90, (0 missing)
-      nContractQuantity < 0.9959    to the left,  improve= 69.06, (0 missing)
-      Territory         splits as  -R---L------R------R-RR-L--RRR-LLRLLLLL-LRL-RLL-R--------R---RRR---------R---R----R---R--RLR--R-----R---RR----R--, improve= 56.96, (0 missing)
-      Channel           splits as  LLR-LR--L--, improve= 35.97, (0 missing)
-  Surrogate splits:
-      nContractQuantity < 0.9959    to the left,  agree=0.678, adj=0.233, (0 split)
-      Territory         splits as  -R---L------R------R-RR-R--RRR-RRRLLRLL-LRL-RLL-R--------R---RLR---------R---R----R---R--RLR--R-----R---RR----R--, agree=0.677, adj=0.230, (0 split)
-      Channel           splits as  RRR-LR--L--, agree=0.621, adj=0.096, (0 split)
-
-Node number 235: 1501 observations
-  predicted class=TRUE   expected loss=0.09993  P(node) =0.07899
-    class counts:   150  1351
-   probabilities: 0.100 0.900 
-
-Node number 466: 108 observations
-  predicted class=FALSE  expected loss=0.1204  P(node) =0.005684
-    class counts:    95    13
-   probabilities: 0.880 0.120 
-
-Node number 467: 400 observations
-  predicted class=TRUE   expected loss=0.0525  P(node) =0.02105
-    class counts:    21   379
-   probabilities: 0.052 0.948 
-
-Node number 468: 387 observations
-  predicted class=FALSE  expected loss=0.1525  P(node) =0.02037
-    class counts:   328    59
+Node number 116: 382 observations
+  predicted class=FALSE  expected loss=0.1518  P(node) =0.0201
+    class counts:   324    58
    probabilities: 0.848 0.152 
 
-Node number 469: 536 observations
-  predicted class=TRUE   expected loss=0.1231  P(node) =0.02821
-    class counts:    66   470
-   probabilities: 0.123 0.877 
+Node number 117: 565 observations
+  predicted class=TRUE   expected loss=0.1274  P(node) =0.02973
+    class counts:    72   493
+   probabilities: 0.127 0.873 
+
+Node number 118: 1479 observations,    complexity param=0.0137
+  predicted class=TRUE   expected loss=0.3063  P(node) =0.07783
+    class counts:   453  1026
+   probabilities: 0.306 0.694 
+  left son=236 (416 obs) right son=237 (1063 obs)
+  Primary splits:
+      nInvoicePrice     < -0.1532   to the left,  improve=269.10, (0 missing)
+      Territory         splits as  -R---R------L--LR--L-RR-L--LLR-RRRLLLRR-LRR-RRR-R--------L---RRR---------R---L----LR--L--RRR--R-----L---LR----R--, improve= 46.40, (0 missing)
+      nContractQuantity < 0.655     to the left,  improve= 44.34, (0 missing)
+      Channel           splits as  RRR-LR--RLR, improve= 27.20, (0 missing)
+  Surrogate splits:
+      Territory splits as  -R---R------R--RR--R-RR-R--RRR-RRRRRRRR-RRR-RRR-R--------R---LRR---------R---R----RR--L--RRR--R-----R---RR----R--, agree=0.721, adj=0.01, (0 split)
+
+Node number 119: 1463 observations
+  predicted class=TRUE   expected loss=0.1012  P(node) =0.07699
+    class counts:   148  1315
+   probabilities: 0.101 0.899 
+
+Node number 236: 416 observations
+  predicted class=FALSE  expected loss=0.2115  P(node) =0.02189
+    class counts:   328    88
+   probabilities: 0.788 0.212 
+
+Node number 237: 1063 observations
+  predicted class=TRUE   expected loss=0.1176  P(node) =0.05594
+    class counts:   125   938
+   probabilities: 0.118 0.882 
 ```
 
 ```r
@@ -598,15 +553,14 @@ rpart(formula = as.factor(isDiscount) ~ nContractQuantity + nInvoicePrice +
 Variables actually used in tree construction:
 [1] Territory         nContractQuantity nInvoicePrice    
 
-Root node error: 6215/19002 = 0.33
+Root node error: 6170/19002 = 0.32
 
 n= 19002 
 
-     CP nsplit rel error xerror   xstd
-1 0.325      0      1.00   1.00 0.0104
-2 0.015      2      0.35   0.35 0.0071
-3 0.013      9      0.24   0.24 0.0060
-4 0.010     10      0.22   0.23 0.0059
+     CP nsplit rel error xerror  xstd
+1 0.328      0      1.00   1.00 0.010
+2 0.014      2      0.34   0.34 0.007
+3 0.010      8      0.23   0.24 0.006
 ```
 
 ```r
@@ -641,8 +595,8 @@ tree2.table
 ```
        
         FALSE TRUE
-  FALSE  4978 1070
-  TRUE    484 1613
+  FALSE  5196  466
+  TRUE    221 2262
 ```
 
 
@@ -721,8 +675,8 @@ No. of variables tried at each split: 1
         OOB estimate of  error rate: 4.6%
 Confusion matrix:
       FALSE TRUE class.error
-FALSE 12330  457     0.03574
-TRUE    418 5797     0.06726
+FALSE 12373  459     0.03577
+TRUE    415 5755     0.06726
 ```
 
 ```r
@@ -731,9 +685,9 @@ importance(forest1.model) #importance of each predictor
 
 ```
                   MeanDecreaseGini
-nContractQuantity             3036
-nInvoicePrice                 1681
-Channel                       1603
+nContractQuantity             2976
+nInvoicePrice                 1643
+Channel                       1645
 ```
 
 ```r
@@ -757,8 +711,8 @@ forest1.table
 ```
        
         FALSE TRUE
-  FALSE  5289  188
-  TRUE    173 2495
+  FALSE  5206  203
+  TRUE    211 2525
 ```
 
 
@@ -817,9 +771,9 @@ Parameters:
        cost:  10000 
       gamma:  8 
 
-Number of Support Vectors:  5179
+Number of Support Vectors:  5226
 
- ( 3139 2040 )
+ ( 3211 2015 )
 
 
 Number of Classes:  2 
@@ -843,8 +797,8 @@ svm.table
 ```
        
         FALSE TRUE
-  FALSE  5171 1792
-  TRUE    291  891
+  FALSE  5243  219
+  TRUE    174 2509
 ```
 
 
@@ -875,8 +829,10 @@ plot(svm.accuracy)
 - Visualize the SVM model
 
 ```r
-#plot(svm.model, data = dataV, formula = nContractQuantity ~ nInvoicePrice)
+plot(svm.model, data = dataV, formula = nContractQuantity ~ nInvoicePrice)
 ```
+
+![plot of chunk svm.visualization](figure/svm_visualization.png) 
 
 
 

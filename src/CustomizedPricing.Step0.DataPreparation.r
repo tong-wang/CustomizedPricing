@@ -4,7 +4,7 @@ Sys.setenv(LANG = "en")
 #setwd("~/PATH/TO/DATA/FILE")
 
 ### read the data files
-data <- read.csv("data.v5.masked.csv", header=TRUE)
+data <- read.csv("../data/data.v5.masked.csv", header=TRUE)
 
 
 
@@ -37,9 +37,6 @@ dataV <- data[-RandomIndex.T, ]
 
 ###########
 ## test if the data sets are good
-levels(dataT$Channel)==levels(dataV$Channel)
-levels(dataT$Territory)==levels(dataV$Territory)
-
 logistic2.model <- glm(isDiscount ~ nContractQuantity + nInvoicePrice + Channel + Territory, data=dataT, family=binomial())
 summary(logistic2.model)
 
@@ -49,8 +46,7 @@ logistic2.valid$predP <- predict(logistic2.model, newdata=logistic2.valid, type=
 
 
 ##output masked data
-write.csv(dataT, "data.v5.masked.Training.csv", quote=FALSE, row.names=FALSE)
-write.csv(dataV, "data.v5.masked.Validation.csv", quote=FALSE, row.names=FALSE)
-
+save(dataT, file = "../data/data.v5.masked.Training.RData")
+save(dataV, file = "../data/data.v5.masked.Validation.RData")
 ### end data preparation
 
