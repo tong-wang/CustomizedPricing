@@ -9,11 +9,11 @@ n.territory <- 100  # number of territories
 n.obs.mean <- 100   # average number of observations for each channel-territory pair
 
 
-# ContractQuantity of each deal ~ N(quant.mean, quant.sd)
+# ContractQuantity of each deal ~ logN(quant.mean, quant.sd)
 quant.mean <- 3
 quant.sd <- 1.5
 
-# InvoicePrice of each deal ~ N(price.mean, price.sd)
+# InvoicePrice of each deal ~ logN(price.mean, price.sd)
 price.mean <- 4.5
 price.sd <- 1
 
@@ -65,6 +65,7 @@ for (c in 1:n.channel) {
         disc <- rnorm(n.obs, mean=disc.mean, sd=disc.sd)
         disc <- ifelse(disc<0, 0, disc)
         disc <- ifelse(disc>disc.max, disc.max, disc)
+        
         buy <- ifelse(disc>=minDisc, TRUE, FALSE)
         
         chunk <- data.frame(Channel=rep(paste("Channel", as.character(c), sep="_"), n.obs),
