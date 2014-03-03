@@ -1,60 +1,114 @@
-Sys.setenv(LANG = "en")
 require("plyr")
 require("ggplot2")
+
+require("hydroGOF")
+require("partykit")
+require("rpart.plot")
+
+
 
 #NEED TO FIRST SET R WORKING DIRECTORY TO WHERE THE FILES ARE LOCATED!!!
 #setwd("~/PATH/TO/DATA/FILE")
 
 ### read the data files
-load("../data/data.v5.masked.Training.RData")
-load("../data/data.v5.masked.Validation.RData")
 
-load("../data/Step1.output.RData")
+## if using the REAL dataset ##
+######load("../data/data.v5.masked.Training.RData")
+######load("../data/data.v5.masked.Validation.RData")
+
+## if using the SIMULATED dataset ##
+load("../data/SimulatedDataset_Training.RData")
+load("../data/SimulatedDataset_Validation.RData")
+
+
+## load the output from Step 1 (the "valid" dataframe)
+#load("../data/Step1.output.RData")
 
 
 
 
 ###########################
-### STEP2. We are extending the work from the source.
-## We are considering rpart as the base algorithm from base. 
-require("hydroGOF")
-require("partykit")
-require("rpart.plot")
+### STEP 1. Regression: How much discount to offer?
+### Need to test multiple regression tools: linear regression, decision tree, random forest, and SVM
+###########################
 
-#linear regression for Discount
+## Prepare Validation dataset
+s2.valid <- dataV[c("Channel", "Territory", "t1", "t2", "nContractQuantity", "nInvoicePrice", "Discount", "isDiscount", "minDisc")]
+s2.valid <- s2.valid[s2.valid$isDiscount,]
 
-linear2.model <- lm(Discount ~ nContractQuantity + nInvoicePrice + Channel , data=dataT[dataT$isDiscount,])
-summary(linear2.model)
 
-linear2.valid2 <- forest1.valid[forest1.valid$pred1==1,]
-names(linear2.valid2)
 
-linear2.valid2$pred <- predict(linear2.model, newdata=linear2.valid2)
-summary(linear2.valid2)
+## Train the models
 
+# [s2.lm1] linear regression for Discount
+s2.lm1.model <- lm(Discount ~ nContractQuantity + nInvoicePrice + Channel, data=dataT[dataT$isDiscount, ])
+summary(s2.lm1.model)
+
+
+# validation
+s2.valid$s2.lm1.pred <- predict(s2.lm1.model, newdata=s2.valid)
 ## Calculating RMSE as the accuracy measure
-RMSE_linear=rmse(linear2.valid2$pred, linear2.valid2$Discount)
-plot(linear2.valid2$Discount, linear2.valid2$pred)
+s2.lm1.RMSE <- rmse(s2.valid$s2.lm1.pred, s2.valid$Discount)
+plot(s2.valid$Discount, s2.valid$s2.lm1.pred)
 
 
 
 
 
-
-#rpart regression for Discount with Territory
-treeDiscount.model <- rpart(Discount ~ nContractQuantity + nInvoicePrice + Channel + Territory, data=dataT[dataT$isDiscount,], method='anova')
-summary(treeDiscount.model)
-
-treeDiscount.valid2 <- svm.valid[svm.valid$pred1==1,]
-treeDiscount.valid2$pred <- predict(treeDiscount.model, newdata=treeDiscount.valid2)
-summary(treeDiscount.valid2)
+# [s2.lm2] linear regression for Discount
+s2.lm2.model <- lm(Discount ~ nContractQuantity + nInvoicePrice + Channel + Territory, data=dataT[dataT$isDiscount, ])
+summary(s2.lm2.model)
 
 
+# validation
+s2.valid$s2.lm2.pred <- predict(s2.lm2.model, newdata=s2.valid)
+## Calculating RMSE as the accuracy measure
+s2.lm2.RMSE <- rmse(s2.valid$s2.lm2.pred, s2.valid$Discount)
+plot(s2.valid$Discount, s2.valid$s2.lm2.pred)
+
+
+
+
+
+# [s2.dt1] rpart regression for Discount with Territory
+s2.dt1.model <- rpart(Discount ~ nContractQuantity + nInvoicePrice + Channel, data=dataT[dataT$isDiscount,], method='anova', cp=0.005, minbucket=30)
+summary(s2.dt1.model)
+
+
+# validation
+s2.valid$s2.dt1.pred <- predict(s2.dt1.model, newdata=s2.valid)
+## Calculating RMSE as the accuracy measure
+s2.dt1.RMSE=rmse(s2.valid$s2.dt1.pred, s2.valid$Discount)
+plot(s2.valid$s2.dt1.pred, s2.valid$Discount)
+
+
+
+
+
+# [s2.dt2] rpart regression for Discount with Territory
+s2.dt2.model <- rpart(Discount ~ nContractQuantity + nInvoicePrice + Channel + Territory, data=dataT[dataT$isDiscount,], method='anova', cp=0.005, minbucket=30)
+summary(s2.dt2.model)
+
+
+# validation
+s2.valid$s2.dt2.pred <- predict(s2.dt2.model, newdata=s2.valid)
+## Calculating RMSE as the accuracy measure
+s2.dt2.RMSE=rmse(s2.valid$s2.dt2.pred, s2.valid$Discount)
+plot(s2.valid$s2.dt2.pred, s2.valid$Discount)
+
+
+## Plotting of the Rpart
+prp(s2.dt2.model)
+#s2.dt2.model.party <- as.party(s2.dt2.model)
+#plot(s2.dt2.model.party, main="Plot of Decision Tree", type="simple")
+
+
+
+########################
 ## Finding the leaf number the elements belong to. This is for discount optimisation in next step
-tree1 = treeDiscount.model
-tree1$frame$yval = as.numeric(rownames(tree1$frame))
-treeDiscount.valid2$node= as.factor(predict(tree1, newdata=treeDiscount.valid2))
-plot(treeDiscount.valid2$node)
+s2.dt2.model$frame$yval <- as.numeric(rownames(s2.dt2.model$frame))
+s2.valid$s2.dt2.node <- as.factor(predict(s2.dt2.model, newdata=s2.valid))
+plot(s2.valid$s2.dt2.node)
 
 ##The labelling is done on training data as well to enable further steps of optimisation
 data_discount=dataT[dataT$isDiscount,]
@@ -63,52 +117,7 @@ data_discount$node1= as.factor(predict(tree1, newdata=data_discount))
 ##preview demand curve of a segment
 summary(data_discount)
 hist(data_discount[data_discount$node1==488,]$Discount)
-
-
-
-## Calculating RMSE as the accuracy measure
-RMSE_rpart=rmse(treeDiscount.valid2$pred,treeDiscount.valid2$Discount)
-plot(treeDiscount.valid2$pred,treeDiscount.valid2$Discount)
-
-
-## Plotting of the Rpart
-prp(treeDiscount.model)
-##treeDiscount_party = as.party(treeDiscount.model)
-##plot(treeDiscount_party,main="Plot of Decision Tree",type="simple")
-
-
-
-
-
-
-#rpart regression for Discount without Territory
-treeDiscount_T.model <- rpart(Discount ~ nContractQuantity + nInvoicePrice + Channel, data=dataT[dataT$isDiscount,], method='anova', cp=0.001)
-summary(treeDiscount_T.model)
-
-treeDiscount_T.valid2 <- forest1.valid[forest1.valid$pred1==1,]
-treeDiscount_T.valid2$pred <- predict(treeDiscount_T.model, newdata=treeDiscount_T.valid2)
-summary(treeDiscount_T.valid2)
-
-
-## Finding the leaf number the elements belong to. This is for discount optimisation in next step
-tree2 = treeDiscount_T.model
-tree2$frame$yval = as.numeric(rownames(tree2$frame))
-treeDiscount_T.valid2$node= as.factor(predict(tree2, newdata=treeDiscount_T.valid2))
-
-plot(treeDiscount_T.valid2$node)
-
-data_discount$node2= as.factor(predict(tree2, newdata=data_discount))
-
-
-
-RMSE_rpartT=rmse(treeDiscount_T.valid2$pred,treeDiscount_T.valid2$Discount)
-plot(treeDiscount_T.valid2$pred,treeDiscount_T.valid2$Discount)
-## With out territory, the results seem to be better
-
-## Plotting of the Rpart
-prp(treeDiscount_T.model)
-#treeDiscount_party_T = as.party(treeDiscount_T.model)
-#plot(treeDiscount_party_T,main="Plot of Decision Tree",type="simple")
+########################
 
 
 
@@ -118,47 +127,82 @@ prp(treeDiscount_T.model)
 
 
 
-#randomForest regression for Discount
-rFDiscount.model <- randomForest(Discount ~ nContractQuantity + nInvoicePrice + Channel , data=dataT[dataT$isDiscount,]
-                                 ,do.trace=TRUE)
-summary(rFDiscount.model)
-print(rFDiscount.model) # view results 
-importance(rFDiscount.model) #importance of each predictor
-plot(rFDiscount.model)
+# [s2.rf1] randomForest regression for Discount
+s2.rf1.model <- randomForest(Discount ~ nContractQuantity + nInvoicePrice + Channel , data=dataT[dataT$isDiscount,], do.trace=TRUE)
+summary(s2.rf1.model)
+print(s2.rf1.model) # view results 
+importance(s2.rf1.model) #importance of each predictor
+plot(s2.rf1.model)
 
-rFDiscount.valid2 <- forest1.valid[forest1.valid$pred1==1,]
-
-
-rFDiscount.valid2$pred <- predict(rFDiscount.model, newdata=rFDiscount.valid2)
-summary(rFDiscount.valid2)
-
-RMSE_rF=rmse(rFDiscount.valid2$pred,rFDiscount.valid2$Discount)
-plot(rFDiscount.valid2$pred,rFDiscount.valid2$Discount)
+# validation
+s2.valid$s2.rf1.pred <- predict(s2.rf1.model, newdata=s2.valid)
+s2.rf1.RMSE <- rmse(s2.valid$s2.rf1.pred, s2.valid$Discount)
+plot(s2.valid$s2.rf1.pred, s2.valid$Discount)
 
 
 
 
-#SVM regression [not working yet]
-#svm.tune2 <- tune.svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT[dataT$isDiscount,], type="eps-regression", gamma = 2^(-1:5), cost = 10^(1:4))
-#svm.model2 <- svm.tune2$best.model
-#svm.model2 <- svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT[dataT$isDiscount,], type="eps-regression", cost = 10000, gamma = 8)
-#summary(svm.model2)
 
-#svm.valid2 <- svm.valid[svm.valid$pred1==1,][c("RecordID", "Channel", "Territory", "nContractQuantity", "nInvoicePrice", "Discount", "isDiscount")]
-#svm.valid2$pred <- predict(svm.model2, newdata=svm.valid2)
-#summary(svm.valid2)
+# [s2.rf2] randomForest regression for Discount
+s2.rf2.model <- randomForest(Discount ~ nContractQuantity + nInvoicePrice + Channel + t1 + t2 , data=dataT[dataT$isDiscount,], do.trace=TRUE)
+summary(s2.rf2.model)
+print(s2.rf2.model) # view results 
+importance(s2.rf2.model) #importance of each predictor
+plot(s2.rf2.model)
 
 
-#plot(svm.valid2$Discount, svm.valid2$pred, xlim=c(0,1), ylim=c(0,1))
-#qplot(x=Discount, y=pred, colour=Channel, data=svm.valid2, xlim=c(0,1), ylim=c(0,1))
+# validation
+s2.valid$s2.rf2.pred <- predict(s2.rf2.model, newdata=s2.valid)
+s2.rf2.RMSE <- rmse(s2.valid$s2.rf2.pred, s2.valid$Discount)
+plot(s2.valid$s2.rf2.pred, s2.valid$Discount)
+
+
+
+
+
+
+# [s2.svm2] SVM regression
+#s2.svm1.tune <- tune.svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel, data = dataT[dataT$isDiscount,], type="eps-regression", gamma = 2^(-1:5), cost = 10^(1:4))
+#s2.svm1.model <- s2.svm1.tune$best.model
+s2.svm1.model <- svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel, data = dataT[dataT$isDiscount,], type="eps-regression", cost = 10, gamma = 0.125)
+summary(s2.svm1.model)
+
+
+# validation
+s2.valid$s2.svm1.pred <- predict(s2.svm1.model, newdata=s2.valid)
+s2.svm1.RMSE <- rmse(s2.valid$s2.svm1.pred, s2.valid$Discount)
+plot(s2.valid$s2.svm1.pred, s2.valid$Discount)
+
+
+
+
+
+# [s2.svm2] SVM regression
+#s2.svm2.tune <- tune.svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT[dataT$isDiscount,], type="eps-regression", gamma = 2^(-1:5), cost = 10^(1:4))
+#s2.svm2.model <- s2.svm2.tune$best.model
+s2.svm2.model <- svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT[dataT$isDiscount,], type="eps-regression", cost = 10, gamma = 0.125)
+summary(s2.svm2.model)
+
+
+# validation
+s2.valid$s2.svm2.pred <- predict(s2.svm2.model, newdata=s2.valid)
+s2.svm2.RMSE <- rmse(s2.valid$s2.svm2.pred, s2.valid$Discount)
+plot(s2.valid$s2.svm2.pred, s2.valid$Discount)
 
 
 
 
 
 ### Tabulating Results
+s2.result <- data.frame(Model = c("s2.lm1", "s2.lm2", "s2.dt1", "s2.dt2", "s2.rf1", "s2.rf2", "s2.svm1", "s2.svm2"), 
+                        RMSE = c(s2.lm1.RMSE, s2.lm2.RMSE, s2.dt1.RMSE, s2.dt2.RMSE, s2.rf1.RMSE, s2.rf2.RMSE, s2.svm1.RMSE, s2.svm2.RMSE)
+)
+s2.result
 
-Results=data.frame(Model_Type=c("Linear Regression","rpart With Territory","rpart Without Territory","randomForest"), RMSE = c(RMSE_linear,RMSE_rpart,RMSE_rpartT,RMSE_rF))
-Results
-## Rpart without Territory code seems to be best following Ozam razor's rule
+
+## Choose the best model
+s2.bestmodel.str <- as.character(s2.result[s2.result$RMSE == min(s2.result$RMSE),]$Model)
+s2.bestmodel <- eval(parse(text=paste0(s2.bestmodel.str, ".model")))
+summary(s2.bestmodel)
+
 
