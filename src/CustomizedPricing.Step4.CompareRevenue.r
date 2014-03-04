@@ -103,7 +103,7 @@ s4.valid$so2b.buy <- s4.valid$so2b.offer >= s4.valid$minDisc
 
 s4.result <- data.frame(Solution = c("current", "n1", "n2", "so1", "so2", "so2b"), 
                         Sales = c(sum(s4.valid$Buy*s4.valid$ContractQuantity), sum(s4.valid$n1.buy*s4.valid$ContractQuantity), sum(s4.valid$n2.buy*s4.valid$ContractQuantity), sum(s4.valid$so1.buy*s4.valid$ContractQuantity), sum(s4.valid$so2.buy*s4.valid$ContractQuantity), sum(s4.valid$so2b.buy*s4.valid$ContractQuantity)),
-                        Revenue = c(sum(s4.valid$Buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice), sum(s4.valid$n1.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice), sum(s4.valid$n2.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice), sum(s4.valid$so1.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice), sum(s4.valid$so2.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice), sum(s4.valid$so2b.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice))
+                        Revenue = c(sum(s4.valid$Buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice*(1-s4.valid$Discount)), sum(s4.valid$n1.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice*(1-s4.valid$n1.offer)), sum(s4.valid$n2.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice*(1-s4.valid$n2.offer)), sum(s4.valid$so1.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice*(1-s4.valid$so1.offer)), sum(s4.valid$so2.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice*(1-s4.valid$so2.offer)), sum(s4.valid$so2b.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice*(1-s4.valid$so2b.offer)))
 )
 
 s4.result
