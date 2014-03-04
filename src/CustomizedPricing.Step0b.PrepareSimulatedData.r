@@ -57,12 +57,12 @@ price.coef.mean <- 0.03
 price.coef.sd <- 0.0075
 
 # constant term is fixed
-minDisc.intercep <- -0.45
+minDisc.intercep <- -0.3
 
 
 # minDisc.cv is Channel-Territory specific, and is drawn from U(minDisc.cv.min, minDisc.cv.max)
-minDisc.cv.min <- 0.2
-minDisc.cv.max <- 0.3
+minDisc.cv.min <- 0.15
+minDisc.cv.max <- 0.25
 
 
 
@@ -137,7 +137,7 @@ hist(dataset[dataset$Buy,]$Discount)
 hist(log(dataset[dataset$Buy,]$InvoicePrice))
 hist(log(dataset[dataset$Buy,]$ContractQuantity))
 
-# number of observations
+# number of observations per C-T segment
 hist(ddply(dataset[dataset$Buy,], .(Channel, Territory), nrow)$V1, breaks=50)
 
 # average discount by channel
