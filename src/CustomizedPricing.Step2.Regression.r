@@ -2,8 +2,6 @@ require("plyr")
 require("ggplot2")
 
 require("hydroGOF")
-require("partykit")
-require("rpart.plot")
 
 
 
@@ -20,9 +18,6 @@ require("rpart.plot")
 load("../data/SimulatedDataset_Training.RData")
 load("../data/SimulatedDataset_Validation.RData")
 
-
-## load the output from Step 1 (the "valid" dataframe)
-#load("../data/Step1.output.RData")
 
 
 
@@ -47,6 +42,7 @@ summary(s2.lm1.model)
 
 # validation
 s2.valid$s2.lm1.pred <- predict(s2.lm1.model, newdata=s2.valid)
+s2.valid$s2.lm1.pred <- ifelse(s2.valid$s2.lm1.pred<0, 0, s2.valid$s2.lm1.pred) #discount should be non-negative
 ## Calculating RMSE as the accuracy measure
 s2.lm1.RMSE <- rmse(s2.valid$s2.lm1.pred, s2.valid$Discount)
 plot(s2.valid$Discount, s2.valid$s2.lm1.pred)
@@ -62,6 +58,7 @@ summary(s2.lm2.model)
 
 # validation
 s2.valid$s2.lm2.pred <- predict(s2.lm2.model, newdata=s2.valid)
+s2.valid$s2.lm2.pred <- ifelse(s2.valid$s2.lm2.pred<0, 0, s2.valid$s2.lm2.pred) #discount should be non-negative
 ## Calculating RMSE as the accuracy measure
 s2.lm2.RMSE <- rmse(s2.valid$s2.lm2.pred, s2.valid$Discount)
 plot(s2.valid$Discount, s2.valid$s2.lm2.pred)
@@ -71,12 +68,14 @@ plot(s2.valid$Discount, s2.valid$s2.lm2.pred)
 
 
 # [s2.dt1] rpart regression for Discount with Territory
+require("rpart")
 s2.dt1.model <- rpart(Discount ~ nContractQuantity + nInvoicePrice + Channel, data=dataT[dataT$isDiscount,], method='anova', cp=0.005, minbucket=30)
 summary(s2.dt1.model)
 
 
 # validation
 s2.valid$s2.dt1.pred <- predict(s2.dt1.model, newdata=s2.valid)
+s2.valid$s2.dt1.pred <- ifelse(s2.valid$s2.dt1.pred<0, 0, s2.valid$s2.dt1.pred) #discount should be non-negative
 ## Calculating RMSE as the accuracy measure
 s2.dt1.RMSE=rmse(s2.valid$s2.dt1.pred, s2.valid$Discount)
 plot(s2.valid$s2.dt1.pred, s2.valid$Discount)
@@ -85,44 +84,27 @@ plot(s2.valid$s2.dt1.pred, s2.valid$Discount)
 
 
 
+
 # [s2.dt2] rpart regression for Discount with Territory
+require("rpart")
 s2.dt2.model <- rpart(Discount ~ nContractQuantity + nInvoicePrice + Channel + Territory, data=dataT[dataT$isDiscount,], method='anova', cp=0.005, minbucket=30)
 summary(s2.dt2.model)
 
 
 # validation
 s2.valid$s2.dt2.pred <- predict(s2.dt2.model, newdata=s2.valid)
+s2.valid$s2.dt2.pred <- ifelse(s2.valid$s2.dt2.pred<0, 0, s2.valid$s2.dt2.pred) #discount should be non-negative
 ## Calculating RMSE as the accuracy measure
 s2.dt2.RMSE=rmse(s2.valid$s2.dt2.pred, s2.valid$Discount)
 plot(s2.valid$s2.dt2.pred, s2.valid$Discount)
 
 
 ## Plotting of the Rpart
-prp(s2.dt2.model)
+#require("rpart.plot")
+#prp(s2.dt2.model)
+#require("partykit")
 #s2.dt2.model.party <- as.party(s2.dt2.model)
 #plot(s2.dt2.model.party, main="Plot of Decision Tree", type="simple")
-
-
-
-########################
-## Finding the leaf number the elements belong to. This is for discount optimisation in next step
-s2.dt2.model$frame$yval <- as.numeric(rownames(s2.dt2.model$frame))
-s2.valid$s2.dt2.node <- as.factor(predict(s2.dt2.model, newdata=s2.valid))
-plot(s2.valid$s2.dt2.node)
-
-##The labelling is done on training data as well to enable further steps of optimisation
-data_discount=dataT[dataT$isDiscount,]
-data_discount$node1= as.factor(predict(tree1, newdata=data_discount))
-
-##preview demand curve of a segment
-summary(data_discount)
-hist(data_discount[data_discount$node1==488,]$Discount)
-########################
-
-
-
-
-
 
 
 
@@ -136,6 +118,7 @@ plot(s2.rf1.model)
 
 # validation
 s2.valid$s2.rf1.pred <- predict(s2.rf1.model, newdata=s2.valid)
+s2.valid$s2.rf1.pred <- ifelse(s2.valid$s2.rf1.pred<0, 0, s2.valid$s2.rf1.pred) #discount should be non-negative
 s2.rf1.RMSE <- rmse(s2.valid$s2.rf1.pred, s2.valid$Discount)
 plot(s2.valid$s2.rf1.pred, s2.valid$Discount)
 
@@ -153,6 +136,7 @@ plot(s2.rf2.model)
 
 # validation
 s2.valid$s2.rf2.pred <- predict(s2.rf2.model, newdata=s2.valid)
+s2.valid$s2.rf2.pred <- ifelse(s2.valid$s2.rf2.pred<0, 0, s2.valid$s2.rf2.pred) #discount should be non-negative
 s2.rf2.RMSE <- rmse(s2.valid$s2.rf2.pred, s2.valid$Discount)
 plot(s2.valid$s2.rf2.pred, s2.valid$Discount)
 
@@ -162,14 +146,15 @@ plot(s2.valid$s2.rf2.pred, s2.valid$Discount)
 
 
 # [s2.svm2] SVM regression
-#s2.svm1.tune <- tune.svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel, data = dataT[dataT$isDiscount,], type="eps-regression", gamma = 2^(-1:5), cost = 10^(1:4))
+#s2.svm1.tune <- tune.svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel, data = dataT[dataT$isDiscount,], type="eps-regression", gamma = 2^(-8:0), cost = 10^(-1:4))
 #s2.svm1.model <- s2.svm1.tune$best.model
-s2.svm1.model <- svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel, data = dataT[dataT$isDiscount,], type="eps-regression", cost = 10, gamma = 0.125)
+s2.svm1.model <- svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel, data = dataT[dataT$isDiscount,], type="eps-regression", cost = 10, gamma = 2^(-7))
 summary(s2.svm1.model)
 
 
 # validation
 s2.valid$s2.svm1.pred <- predict(s2.svm1.model, newdata=s2.valid)
+s2.valid$s2.svm1.pred <- ifelse(s2.valid$s2.svm1.pred<0, 0, s2.valid$s2.svm1.pred) #discount should be non-negative
 s2.svm1.RMSE <- rmse(s2.valid$s2.svm1.pred, s2.valid$Discount)
 plot(s2.valid$s2.svm1.pred, s2.valid$Discount)
 
@@ -178,14 +163,15 @@ plot(s2.valid$s2.svm1.pred, s2.valid$Discount)
 
 
 # [s2.svm2] SVM regression
-#s2.svm2.tune <- tune.svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT[dataT$isDiscount,], type="eps-regression", gamma = 2^(-1:5), cost = 10^(1:4))
+#s2.svm2.tune <- tune.svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT[dataT$isDiscount,], type="eps-regression", gamma = 2^(-5:5), cost = 10^(-1:4))
 #s2.svm2.model <- s2.svm2.tune$best.model
-s2.svm2.model <- svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT[dataT$isDiscount,], type="eps-regression", cost = 10, gamma = 0.125)
+s2.svm2.model <- svm(Discount ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT[dataT$isDiscount,], type="eps-regression", cost = 10, gamma = 0.0625)
 summary(s2.svm2.model)
 
 
 # validation
 s2.valid$s2.svm2.pred <- predict(s2.svm2.model, newdata=s2.valid)
+s2.valid$s2.svm2.pred <- ifelse(s2.valid$s2.svm2.pred<0, 0, s2.valid$s2.svm2.pred) #discount should be non-negative
 s2.svm2.RMSE <- rmse(s2.valid$s2.svm2.pred, s2.valid$Discount)
 plot(s2.valid$s2.svm2.pred, s2.valid$Discount)
 
@@ -205,4 +191,8 @@ s2.bestmodel.str <- as.character(s2.result[s2.result$RMSE == min(s2.result$RMSE)
 s2.bestmodel <- eval(parse(text=paste0(s2.bestmodel.str, ".model")))
 summary(s2.bestmodel)
 
+## save the best model for future use
+save(s2.bestmodel, file="../data/Step2.bestmodel.RData")
 
+## save the Decision Tree model for Step 3 use
+save(s2.dt1.model, s2.dt2.model, file="../data/Step2.DTmodels.RData")

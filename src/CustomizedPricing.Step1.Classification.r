@@ -17,14 +17,6 @@ load("../data/SimulatedDataset_Validation.RData")
 
 
 
-## visualize Training data
-summary(dataT)
-hist(dataT[dataT$isDiscount,]$Discount, breaks=100)
-#qplot(x=nContractQuantity, y=Discount, colour=Channel, data=dataT)
-
-
-
-
 ###########################
 ### STEP 1. Classification: predict whom not to offer any discount
 ### Need to test multiple classification tools: logistic regression, decision tree, random forest, and SVM
@@ -308,12 +300,8 @@ s1.bestmodel.str <- as.character(s1.result[s1.result$error_total == min(s1.resul
 s1.bestmodel <- eval(parse(text=paste0(s1.bestmodel.str, ".model")))
 summary(s1.bestmodel)
 
-
-## save data for next step use
-s1.valid2 <- s1.valid[c("Channel", "Territory", "t1", "t2", "nContractQuantity", "nInvoicePrice", "Discount", "isDiscount", "minDisc")]
-s1.valid2$s1.bestPred <- s1.valid[,paste0(s1.bestmodel.str, ".predResp")]
-summary(s1.valid2)
-save(s1.valid2, file="../data/Step1.output.RData")
+## save the best model for future use
+save(s1.bestmodel, file="../data/Step1.bestmodel.RData")
 
 
 

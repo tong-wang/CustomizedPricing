@@ -157,7 +157,20 @@ summary(disc.model)
 ## save the dataset
 save(dataset, file="../data/SimulatedDataset.RData")
 
-# generate a sub-sample of the compelete dataset for benchmarking
+
+# generate a sub-sample of the compelete dataset for Benchmarking
+RandomIndex = sample(nrow(dataset), 10000)
+dataB <- dataset[RandomIndex, ]
+
+# normalizing independent variables: ContractQuantity and InvoicePrice
+dataB$nContractQuantity <-  scale(log(dataB$ContractQuantity))[,1]
+dataB$nInvoicePrice <- scale(log(dataB$InvoicePrice))[,1]
+
+save(dataB, file="../data/SimulatedDataset_Benchmarking.RData")
+
+
+
+# generate a sub-sample of the compelete dataset for Training and Validation
 RandomIndex = sample(nrow(dataset), 30000)
 dataset.sample <- dataset[RandomIndex, ]
 save(dataset.sample, file="../data/SimulatedDataset_Sample.RData")
@@ -231,4 +244,11 @@ save(dataV, file = "../data/SimulatedDataset_Validation.RData")
 
 
 ### end data preparation
+
+
+## visualize Training data
+
+summary(dataT)
+hist(dataT[dataT$isDiscount,]$Discount, breaks=100)
+#qplot(x=nContractQuantity, y=Discount, colour=Channel, data=dataT)
 
