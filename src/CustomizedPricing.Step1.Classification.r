@@ -85,7 +85,7 @@ plot(s1.lg2.accuracy)
 
 ## [s1.dt1] decision tree
 require("rpart")
-s1.dt1.model <- rpart(as.factor(isDiscount) ~ nContractQuantity + nInvoicePrice + Channel, data=dataT, control = rpart.control(cp = 0.005, minbucket=30))
+s1.dt1.model <- rpart(as.factor(isDiscount) ~ nContractQuantity + nInvoicePrice + Channel, data=dataT, control = rpart.control(cp = 0.005, minbucket=30))#, parms = list(loss = matrix(c(0, 2, 1,0), 2, 2)))
 summary(s1.dt1.model)
 printcp(s1.dt1.model)
 plotcp(s1.dt1.model)
@@ -119,7 +119,7 @@ plot(s1.dt1.accuracy)
 
 ## [s1.dt2] decision tree
 require("rpart")
-s1.dt2.model <- rpart(as.factor(isDiscount) ~ nContractQuantity + nInvoicePrice + Channel + Territory, data=dataT, control = rpart.control(cp = 0.005, minbucket=30))
+s1.dt2.model <- rpart(as.factor(isDiscount) ~ nContractQuantity + nInvoicePrice + Channel + Territory, data=dataT, control = rpart.control(cp = 0.005, minbucket=30)) #, parms = list(loss = matrix(c(0, 2, 1,0), 2, 2)))
 summary(s1.dt2.model)
 printcp(s1.dt2.model)
 plotcp(s1.dt2.model)
@@ -219,7 +219,7 @@ require(e1071)
 #s1.svm1.tune <- tune.svm(as.factor(isDiscount) ~ nContractQuantity  + nInvoicePrice + Channel, data = dataT, validation.x=dataV, gamma = 2^(-4:4), cost = 10^(-1:5), probability=TRUE)
 #s1.svm1.model <- s1.svm1.tune$best.model
 
-## directly use the obtained optimal parameter gamma=8, cost=10000
+## directly use the obtained optimal parameter gamma=1/8, cost=10
 s1.svm1.model <- svm(as.factor(isDiscount) ~ nContractQuantity  + nInvoicePrice + Channel, data = dataT, cost = 10, gamma = 0.125, probability=TRUE)
 summary(s1.svm1.model)
 
@@ -256,7 +256,7 @@ require(e1071)
 #s1.svm2.tune <- tune.svm(as.factor(isDiscount) ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT, validation.x=dataV, gamma = 2^(-4:4), cost = 10^(-1:5), probability=TRUE)
 #s1.svm2.model <- s1.svm2.tune$best.model
 
-## directly use the obtained optimal parameter gamma=8, cost=10000
+## directly use the obtained optimal parameter gamma=1/8, cost=10
 s1.svm2.model <- svm(as.factor(isDiscount) ~ nContractQuantity  + nInvoicePrice + Channel + Territory, data = dataT, cost = 10, gamma = 0.125, probability=TRUE)
 summary(s1.svm2.model)
 

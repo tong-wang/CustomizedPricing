@@ -1,5 +1,6 @@
 require("plyr")
 require("ggplot2")
+require("stringr")
 
 #NEED TO FIRST SET R WORKING DIRECTORY TO WHERE THE FILES ARE LOCATED!!!
 #setwd("~/PATH/TO/DATA/FILE")
@@ -72,7 +73,12 @@ s4.valid$n2.buy <- s4.valid$n2.offer >= s4.valid$minDisc
 ### Solution 1: use best models from Step 1 and 2
 ###     --- Use s1.bestmodel to decide whether to offer discount: if TRUE, offer 0
 ###     --- Use s2.bestmodel to predict discount and set offer equal to the predicted discount
-s4.valid$s1.best <- as.logical(predict(s1.bestmodel, newdata=s4.valid))
+
+#s4.valid$s1.best <- as.logical(predict(s1.bestmodel, newdata=s4.valid))
+## conservative cutoff to reduce false negative rate
+## cutoff=0.3 is determined by s1.svm2.accuracy plot
+s4.valid$s1.best <- attr(predict(s1.bestmodel, newdata=s4.valid, probability=TRUE), "probabilities")[,"TRUE"]> 0.3
+
 s4.valid$s2.best <- predict(s2.bestmodel, newdata=s4.valid)
 s4.valid$s2.best <- ifelse(s4.valid$s2.best<0, 0, s4.valid$s2.best) #discount should be non-negative
 s4.valid$so1.offer <- ifelse(s4.valid$s1.best, s4.valid$s2.best, 0)
@@ -107,4 +113,7 @@ s4.result <- data.frame(Solution = c("current", "n1", "n2", "so1", "so2", "so2b"
 )
 
 s4.result
+
+## Save result
+save(s4.result, file="../data/Step4.result.RData")
 
