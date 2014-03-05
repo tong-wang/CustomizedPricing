@@ -76,10 +76,10 @@ s4.valid$n2.buy <- s4.valid$n2.offer >= s4.valid$minDisc
 
 #s4.valid$s1.best <- as.logical(predict(s1.bestmodel, newdata=s4.valid))
 ## conservative cutoff to reduce false negative rate
-## cutoff=0.3 is determined by s1.svm2.accuracy plot
-s4.valid$s1.best <- attr(predict(s1.bestmodel, newdata=s4.valid, probability=TRUE), "probabilities")[,"TRUE"]> 0.3
+## cutoff=0.25 is determined by s1.svm2.accuracy plot in Step 1
+s4.valid$s1.best <- attr(predict(s1.bestmodel, newdata=s4.valid, probability=TRUE), "probabilities")[,"TRUE"]> 0.25  
 
-s4.valid$s2.best <- predict(s2.bestmodel, newdata=s4.valid)
+s4.valid$s2.best <- predict(s2.bestmodel, newdata=s4.valid) + 0.1 ## CONSERVATIVE, 0.1 is the RMSE of the model, obtained in Step 2
 s4.valid$s2.best <- ifelse(s4.valid$s2.best<0, 0, s4.valid$s2.best) #discount should be non-negative
 s4.valid$so1.offer <- ifelse(s4.valid$s1.best, s4.valid$s2.best, 0)
 s4.valid$so1.buy <- s4.valid$so1.offer >= s4.valid$minDisc
@@ -108,6 +108,8 @@ s4.valid$so2b.buy <- s4.valid$so2b.offer >= s4.valid$minDisc
 ## Tabulating Results
 
 s4.result <- data.frame(Solution = c("current", "n1", "n2", "so1", "so2", "so2b"), 
+                        BuyRate = c(sum(s4.valid$Buy), sum(s4.valid$n1.buy), sum(s4.valid$n2.buy), sum(s4.valid$so1.buy), sum(s4.valid$so2.buy), sum(s4.valid$so2b.buy)) / nrow(s4.valid),
+                        DiscountRate = c(nrow(s4.valid[s4.valid$Discount>0,]), nrow(s4.valid[s4.valid$n1.offer>0,]), nrow(s4.valid[s4.valid$n2.offer>0,]), nrow(s4.valid[s4.valid$so1.offer>0,]), nrow(s4.valid[s4.valid$so2.offer>0,]), nrow(s4.valid[s4.valid$so2b.offer>0,]) )/nrow(s4.valid),
                         Sales = c(sum(s4.valid$Buy*s4.valid$ContractQuantity), sum(s4.valid$n1.buy*s4.valid$ContractQuantity), sum(s4.valid$n2.buy*s4.valid$ContractQuantity), sum(s4.valid$so1.buy*s4.valid$ContractQuantity), sum(s4.valid$so2.buy*s4.valid$ContractQuantity), sum(s4.valid$so2b.buy*s4.valid$ContractQuantity)),
                         Revenue = c(sum(s4.valid$Buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice*(1-s4.valid$Discount)), sum(s4.valid$n1.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice*(1-s4.valid$n1.offer)), sum(s4.valid$n2.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice*(1-s4.valid$n2.offer)), sum(s4.valid$so1.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice*(1-s4.valid$so1.offer)), sum(s4.valid$so2.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice*(1-s4.valid$so2.offer)), sum(s4.valid$so2b.buy*s4.valid$ContractQuantity*s4.valid$InvoicePrice*(1-s4.valid$so2b.offer)))
 )
@@ -117,3 +119,17 @@ s4.result
 ## Save result
 save(s4.result, file="../data/Step4.result.RData")
 
+
+
+
+
+
+#### [so1] Performance measures for each step
+summary(s4.valid)
+table(s4.valid$s1.best, s4.valid$ExpectDiscount)
+
+rmse(s4.valid[s4.valid$isDiscount,]$s2.best, s4.valid[s4.valid$isDiscount,]$minDisc)
+
+rmse(s4.valid$so1.offer, s4.valid$minDisc)
+plot(s4.valid$so1.offer, s4.valid$minDisc)
+abline(a=0, b=1)
