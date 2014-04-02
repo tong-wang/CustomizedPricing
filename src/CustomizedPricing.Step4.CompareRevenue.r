@@ -54,13 +54,18 @@ apply.n2 <- function (rows) {
     t <- str_split(rows[1,]$Territory, "_")[[1]][2]
     ct <- paste(c, t, sep="-")
     
+    rows$n2.offer <- NA
+    
     if (ct %in% names(n2.lm)) {
         lm <- n2.lm[[eval(ct)]][[1]]
         pred <- predict(lm, rows)
         offer <- pred + summary(lm)$sigma
         rows$n2.offer <- ifelse(offer<0, 0, ifelse(offer>0.7, 0.7, offer))
-    } else
-        rows$n2.offer <- 0
+    }
+    
+    # set offer to 0.1 if lm cannot predict
+    if (is.na(rows$n2.offer))
+        rows[is.na(rows$n2.offer),]$n2.offer <- 0.1
     
     return(rows)
 }
