@@ -57,7 +57,8 @@ apply.n2 <- function (rows) {
     if (ct %in% names(n2.lm)) {
         lm <- n2.lm[[eval(ct)]][[1]]
         pred <- predict(lm, rows)
-        rows$n2.offer <- ifelse(pred<0, 0, ifelse(pred>0.7, 0.7, pred))
+        offer <- pred + summary(lm)$sigma
+        rows$n2.offer <- ifelse(offer<0, 0, ifelse(offer>0.7, 0.7, offer))
     } else
         rows$n2.offer <- 0
     
